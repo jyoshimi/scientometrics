@@ -9,6 +9,10 @@ files <- readFiles('citations2.txt','citations3.txt')
 df <- convert2df(files,dbsource = "isi", format = "plaintext")
 View(df)
 
+x <- metaTagExtraction(M = df, Field = "CR_AU")
+unlist(strsplit(x$CR_AU[1], ";"))
+y <- cocMatrix(x, Field = "CR_AU", type = "matrix", sep = ";")
+
 results <- biblioAnalysis(df,sep=";")
 View(results)
 
