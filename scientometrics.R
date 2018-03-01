@@ -1,6 +1,7 @@
 setwd('/Users/jyoshimi/ipython/scientometrics')
-
 # See http://htmlpreview.github.io/?https://github.com/massimoaria/bibliometrix/master/vignettes/bibliometrix-vignette.html
+
+
 require('bibliometrix')
 
 # files <- readFiles('citationRecord.txt')
@@ -12,6 +13,19 @@ View(df)
 x <- metaTagExtraction(M = df, Field = "CR_AU")
 unlist(strsplit(x$CR_AU[1], ";"))
 y <- cocMatrix(x, Field = "CR_AU", type = "matrix", sep = ";")
+z <- strsplit(y$author, ';')
+
+for(i in 1:length(y$author)){
+  y$author[i] = z[[i]][1]
+  }
+
+y <- as.data.frame(y)
+y$author <- x$AU
+
+yPrime = aggregate(. ~ author, FUN = sum, data = y)
+
+write.csv(y, file = "test matrix")
+
 
 results <- biblioAnalysis(df,sep=";")
 View(results)
