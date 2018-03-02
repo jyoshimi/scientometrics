@@ -38,6 +38,8 @@ yPrime <- yPrime[, which(colnames(yPrime) != "author")]
 
 yPrimeReversed <- as.data.frame(t(yPrime))
 yPrimeReversed$authors <- row.names(yPrimeReversed)
+yPrimeReversed$authors <- str_replace(string = yPrimeReversed$authors, pattern = "ARIST[A-Z]*", replacement = "ARISTOTLE")
+yPrimeReversed$authors <- str_replace_all(string = yPrimeReversed$authors, pattern = "HUSS*[EA]R?L?[^YS]([[:space:]]\\w*)*", replacement = "HUSSERL E")
 yPrimeReversed$authors <- str_replace(string = yPrimeReversed$authors, pattern = "(^[A-Z]+[[:space:]][A-Z]{1})([A-Z]+)", replacement = "\\1") # remove all full first names (marion jeanluc -> marion j)
 yPrimeReversed$authors <- str_replace(string = yPrimeReversed$authors, replacement = "\\1", pattern = "(^[A-Z]+[[:space:]][A-Z]{1})([[:space:]])([A-Z]{1})([[:space:]]*[A-Z]*)") # removes all second initials (marion j l -> marion j)
 yPrimeReversedPrime <- aggregate(. ~ authors, FUN = sum, data = yPrimeReversed)
