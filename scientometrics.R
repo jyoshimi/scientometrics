@@ -1,31 +1,57 @@
 setwd('/Users/jyoshimi/ipython/scientometrics')
 # See http://htmlpreview.github.io/?https://github.com/massimoaria/bibliometrix/master/vignettes/bibliometrix-vignette.html
-
+setwd('GitHub/scientometrics/')
 
 require('bibliometrix')
+require('stringr')
 
 # files <- readFiles('citationRecord.txt')
-files <- readFiles('citations2.txt','citations3.txt')
+files <- readFiles('data/citations1-500.txt','data/citations501-1000.txt', 'data/citations1001-1500.txt', 'data/citations1501-2000.txt')
 
 df <- convert2df(files,dbsource = "isi", format = "plaintext")
-View(df)
-
 x <- metaTagExtraction(M = df, Field = "CR_AU")
-unlist(strsplit(x$CR_AU[1], ";"))
 y <- cocMatrix(x, Field = "CR_AU", type = "matrix", sep = ";")
-z <- strsplit(y$author, ';')
+z <- strsplit(x$AU, ';')
 
-for(i in 1:length(y$author)){
-  y$author[i] = z[[i]][1]
+authors <- c()
+
+for(i in 1:length(z)){
+  authors <- c(authors, z[[i]][1])
   }
 
 y <- as.data.frame(y)
-y$author <- x$AU
+y$author <- authors
 
-yPrime = aggregate(. ~ author, FUN = sum, data = y)
 
-write.csv(y, file = "test matrix")
+yOrdered <- y[order(row.names(y)),]
+yOrdered <- yOrdered[, order(colnames(yOrdered))]
 
+#clean the rows#
+yOrdered$author <- str_replace(string = yOrdered$author, replacement = "\\1", pattern = "^([A-Z]+[[:space:]][A-Z]{1})([[:space:]])([A-Z]{1})") # removes all second initials (marion j l -> marion j)
+yOrdered$author <- str_replace(string = yOrdered$author, pattern = "(^[A-Z]+[[:space:]][A-Z]{1})([A-Z]+)", replacement = "\\1") # remove all full first names (marion jeanluc -> marion j)
+
+yPrime <- aggregate(. ~ author, FUN = sum, data = yOrdered)
+row.names(yPrime) <- yPrime$author
+yPrime <- yPrime[, which(colnames(yPrime) != "author")]
+
+#clean up columns now#
+
+yPrimeReversed <- as.data.frame(t(yPrime))
+yPrimeReversed$authors <- row.names(yPrimeReversed)
+yPrimeReversed$authors <- str_replace(string = yPrimeReversed$authors, pattern = "(^[A-Z]+[[:space:]][A-Z]{1})([A-Z]+)", replacement = "\\1") # remove all full first names (marion jeanluc -> marion j)
+yPrimeReversed$authors <- str_replace(string = yPrimeReversed$authors, replacement = "\\1", pattern = "(^[A-Z]+[[:space:]][A-Z]{1})([[:space:]])([A-Z]{1})([[:space:]]*[A-Z]*)") # removes all second initials (marion j l -> marion j)
+yPrimeReversedPrime <- aggregate(. ~ authors, FUN = sum, data = yPrimeReversed)
+row.names(yPrimeReversedPrime) <- yPrimeReversedPrime$authors
+yPrimeReversedPrime <- yPrimeReversedPrime[, which(colnames(yPrimeReversedPrime) != "authors")]
+
+#finally!#
+
+finalY <- t(yPrimeReversedPrime)
+smallerFinalY <- finalY[, which(colSums(finalY) > 5, arr.ind = T)]
+smallerFinalY <- smallerFinalY[which(rowSums(smallerFinalY) > 5, arr.ind =  T),]
+
+write.csv(finalyY, file = "cleanish complete adjancency matrix.csv", row.names = T, col.names = T)
+write.csv(smallerFinalY, file = "cleanish small adjacency matrix.csv", row.names = T, col.names = T) # includes only authors with more than 5 citations from authors with total citations to other authors larger than 5.
 
 results <- biblioAnalysis(df,sep=";")
 View(results)
