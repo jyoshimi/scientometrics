@@ -1,10 +1,11 @@
 setwd('/Users/jyoshimi/ipython/scientometrics/v2')
 # See http://htmlpreview.github.io/?https://github.com/massimoaria/bibliometrix/master/vignettes/bibliometrix-vignette.html
-setwd('Documents/GitHub/scientometrics/v2/')
+setwd('GitHub/scientometrics/v2/')
 require('bibliometrix')
 require('stringr')
 require('reshape2')
 require('igraph')
+require('ggraph')
 files <- readFiles('savedref_8.txt', 'savedref_7.txt', 'savedref_6.txt', 
                    'savedref_5.txt', 'savedref_4.txt', 'savedref_3.txt', 
                    'savedref_2.txt', 'savedref_1.txt')
@@ -47,9 +48,6 @@ cocm$author <- authors
 cocmOrdered <- cocm[order(row.names(cocm)),]
 cocmOrdered <- cocmOrdered[, order(colnames(cocmOrdered))]
 
-# Save the matrix in case I want to do python stuff on it
-write.csv(cocmOrdered,file = "cocmOrdered.csv",sep = ",")
-
 # Clean up authors
 # print(authors)
 # removes all second initials (marion j l -> marion j)
@@ -85,24 +83,34 @@ yPrimeReversedPrime <- yPrimeReversedPrime[, which(colnames(yPrimeReversedPrime)
 # Transpose back
 finalY <- t(yPrimeReversedPrime)
 
-finalY <- read.csv("Documents/GitHub/scientometrics/v2/cleaned_matrix.csv", header = T, sep = ',')
-
-  #PABLO: WE CAN GENERATE AN EDGE LIST WITH THE MELT FUNCTION
-
-edgeList <- melt(finalY, id.vars = c("From", "To", "Weight"))
-#write.csv(edgeList, "bigEdgeList.csv")
-edgeList <- as.matrix(edgeList)
-edgeList$From <- as.character(edgeList$Source)
-edgeList$To <- as.character(edgeList$Target)
-edgeList$value <- as.numeric(edgeList$value)
-onlyEdges <- edgeList[, 1:2]
-onlyEdges <- as.character(onlyEdges)
-graphFromEdges <- graph_from_edgelist(edgeList[,1:2])
-
 # Get rid of authors cited less than 5 times and who cited someone less than five times
 # (includes only authors with more than 5 citations from authors with total citations to other authors larger than 5.)
 smallerFinalY <- finalY[, which(colSums(finalY) > 5, arr.ind = T)]
 smallerFinalY <- smallerFinalY[which(rowSums(smallerFinalY) > 5, arr.ind =  T),]
+
+  #PABLO: WE CAN GENERATE AN EDGE LIST WITH THE MELT FUNCTION
+
+edgeList <- melt(finalY)
+colnames(edgeList) <- c("Source", "Target", "Weight")
+edgeList <- edgeList[which(edgeList$Weight > 0),]
+edgeList <- edgeList[which(!is.na(edgeList$Source)),]
+edgeList$Source <- as.character(edgeList$Source)
+edgeList$Target <- as.character(edgeList$Target)
+edgeList$Weight <- as.numeric(edgeList$Weight)
+edgeList <- as.matrix(edgeList)
+write.csv(x = edgeList, file = "smallEdgeList.csv", row.names = F)
+graphWithEdges <- graph.data.frame(edgeList, directed = T)
+
+ggraph(graphWithEdges) + 
+  geom_edge_link() + 
+  geom_node_point()
+
+
+
+
+
+
+
 
 # Write the final matrix
 write.csv(smallerFinalY, file = "cleaned_matrix.csv", row.names = T, col.names = T)
