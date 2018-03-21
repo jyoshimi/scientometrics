@@ -1,9 +1,10 @@
 setwd('/Users/jyoshimi/ipython/scientometrics/v2')
 # See http://htmlpreview.github.io/?https://github.com/massimoaria/bibliometrix/master/vignettes/bibliometrix-vignette.html
-
+setwd('Documents/GitHub/scientometrics/v2/')
 require('bibliometrix')
 require('stringr')
-
+require('reshape2')
+require('igraph')
 files <- readFiles('savedref_8.txt', 'savedref_7.txt', 'savedref_6.txt', 
                    'savedref_5.txt', 'savedref_4.txt', 'savedref_3.txt', 
                    'savedref_2.txt', 'savedref_1.txt')
@@ -83,6 +84,20 @@ yPrimeReversedPrime <- yPrimeReversedPrime[, which(colnames(yPrimeReversedPrime)
 
 # Transpose back
 finalY <- t(yPrimeReversedPrime)
+
+finalY <- read.csv("Documents/GitHub/scientometrics/v2/cleaned_matrix.csv", header = T, sep = ',')
+
+  #PABLO: WE CAN GENERATE AN EDGE LIST WITH THE MELT FUNCTION
+
+edgeList <- melt(finalY, id.vars = c("From", "To", "Weight"))
+#write.csv(edgeList, "bigEdgeList.csv")
+edgeList <- as.matrix(edgeList)
+edgeList$From <- as.character(edgeList$Source)
+edgeList$To <- as.character(edgeList$Target)
+edgeList$value <- as.numeric(edgeList$value)
+onlyEdges <- edgeList[, 1:2]
+onlyEdges <- as.character(onlyEdges)
+graphFromEdges <- graph_from_edgelist(edgeList[,1:2])
 
 # Get rid of authors cited less than 5 times and who cited someone less than five times
 # (includes only authors with more than 5 citations from authors with total citations to other authors larger than 5.)
