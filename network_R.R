@@ -3,8 +3,10 @@ library(igraph)
 library(tidygraph)
 library(ggraph)
 
+setwd('./ipython/scientometrics/')
+
 # Change this to where the files are stored. Small_edge_list.csv has the limited network (in-degree and out-degree filtering)
-db <- read_csv('scientometrics/complete_edge_list.csv') %>% 
+db <- read_csv('small_edge_list.csv') %>% 
   rename(weight = Weight)
 
 # Make an undirected graph first and simplify it to remove redundant links
@@ -61,6 +63,7 @@ net.layout <- igraph::layout.drl(net, options = drl_defaults$coarsen)
 library(RColorBrewer)
 
 # This function interpolates a palette with a higher number of colors than the original SET1
+# (Ignore warning here)
 getPalette = colorRampPalette(brewer.pal(15, "Set1"))
 
 # Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links.
