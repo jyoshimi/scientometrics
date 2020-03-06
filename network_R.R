@@ -3,8 +3,6 @@ library(igraph)
 library(tidygraph)
 library(ggraph)
 
-setwd('./ipython/scientometrics/')
-
 # Change this to where the files are stored. Small_edge_list.csv has the limited network (in-degree and out-degree filtering)
 db <- read_csv('small_edge_list.csv') %>% 
   rename(weight = Weight)
