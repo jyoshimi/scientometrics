@@ -52,7 +52,8 @@ tidynet <- tidynet %>%
   mutate(community = factor(community),
          display.name = ifelse(degree > 50, name, NA))
 
-# This determines which layout the network will have when plotted. It's saved as a dataframe of x and y locations for each node. This is faster than doing it at the moment of plotting.
+# This determines which layout the network will have when plotted. 
+# It's saved as a dataframe of x and y locations for each node. This is faster than doing it at the moment of plotting.
 # layout.drl is the algorithm in which OpenOrd was based.
 # dlr_defaults$default loads the default configuration for the dlr algorithm. Other options change the look drastically!
 net.layout <- igraph::layout.drl(net, options = drl_defaults$coarsen)
