@@ -3,89 +3,103 @@ library(igraph)
 library(tidygraph)
 library(ggraph)
 
-# Change this to where the files are stored. Small_edge_list.csv has the limited network (in-degree and out-degree filtering)
+# Things to fiddle with marked with *
+
+# Change this to where the files are stored.
+# Choices here are small_edge_list.csv and complete_edge_list
 db <- read_csv('small_edge_list.csv') %>% 
   rename(weight = Weight)
 
-# Make an undirected graph first and simplify it to remove redundant links
-net <- igraph::graph_from_data_frame(db, directed = FALSE) %>% 
+# Make an undirected graph first and removing resulting redundant edges with simplify
+# This removes the distinction between citing and cited authors
+net.undirected <- igraph::graph_from_data_frame(db, directed = FALSE) %>% 
   simplify()
 
-# Get eigenvector centrality
-eigenvectors <- igraph::eigen_centrality(net) %>% .$vector
+# Get eigenvector centrality of authors
+eigenvectors <- igraph::eigen_centrality(net.undirected) %>% .$vector
 
-# Try both louvain and F&G Clustering
-lv.cluster <- igraph::cluster_louvain(net)
-fg.cluster <- igraph::cluster_fast_greedy(net)
+# Try both louvain and F&G Clustering. Returns lists of communities.
+lv.cluster <- igraph::cluster_louvain(net.undirected)
+fg.cluster <- igraph::cluster_fast_greedy(net.undirected)
 
-# Build an igraph
-net <- igraph::graph_from_data_frame(db, directed = TRUE)
+# Build a igraph network, which is a directed network built from the edge list
+net.directed <- igraph::graph_from_data_frame(db, directed = TRUE)
 
-# Add eigenvector centrality, indegree and community to the graph for plotting.
-net <- igraph::set.vertex.attribute(graph = net, name = "eigen", value =  eigenvectors)
-net <- igraph::set.vertex.attribute(graph = net, name = "degree", value = degree(net, mode = "in"))
-# Change this line to use either fg.cluster or lv.cluster
-net <- igraph::set.vertex.attribute(graph = net, name = "community", 
-                                    value = igraph::membership(lv.cluster))
+# Add eigenvector centrality, indegree and community as vertex attributes to the igraph network.
+# Used  for plotting.
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "eigen", value =  eigenvectors)
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "degree", value = degree(net.directed, mode = "in"))
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "community_lv", 
+                                             value = igraph::membership(lv.cluster))
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "community_fg", 
+                                             value = igraph::membership(fg.cluster))
 
 # Import as tidynet, which represents graph as a dataframe and it's simpler to visualize it
-tidynet <- tidygraph::as_tbl_graph(net)
+# This is used for all graphing
+tidynet <- tidygraph::as_tbl_graph(net.directed)
 
-# Get nodes as a dataframe
+# Get nodes as a dataframe. 
+# Useful to view
 nodes <- tidynet %>% 
   tidygraph::activate(nodes) %>% 
   as_tibble()
 
-# Uncomment next section to save list of 5 top in-degree authors in each cluster to a filename (set in line 42)
+# Save list of 5 top in-degree authors in each cluster
+# use community_lv or community_fg
 # nodes %>%
-#   group_by(community) %>%
+#   group_by(community_lv) %>%
 #   top_n(5, degree) %>%
-#   arrange(community, desc(degree)) %>%
-#   select(-eigen) %>%
-#   write_csv("lv_complete_degree_directed.csv")
+#   arrange(community_lv, desc(degree)) %>%
+#   select(name, degree, community_lv) %>%
+#   write_csv("top_authors_by_community.csv")
 
-# Get the tidynet with added clustering
-# Set a "display.name" so we can show only the authors with an indegree > 50 (arbitrary).
-# The > 50 cutoff seems to be a little too low for the big network.
+         
+# Add a display.name column which is used to when graphing the network
+# Displays a name only if in-degree > 50 (NA means display nothing)
+# Note that the > 50 cutoff seems to be a little too low for the big network. *
+#
+# Also recode community as a categorical variable
 tidynet <- tidynet %>%
   tidygraph::activate(nodes) %>% 
-  mutate(community = factor(community),
-         display.name = ifelse(degree > 50, name, NA))
+  mutate(display.name = ifelse(degree > 50, name, NA),
+         community_lv = factor(community_lv))
 
-# This determines which layout the network will have when plotted. 
-# It's saved as a dataframe of x and y locations for each node. This is faster than doing it at the moment of plotting.
-# layout.drl is the algorithm in which OpenOrd was based.
-# dlr_defaults$default loads the default configuration for the dlr algorithm. Other options change the look drastically!
-net.layout <- igraph::layout.drl(net, options = drl_defaults$coarsen)
+# Locations of nodes for plotted network. It's saved as a dataframe of x and y
+# locations for each node. This is faster than doing it at the moment of
+# plotting. layout.drl is the algorithm OpenOrd was based on.
+# dlr_defaults$default loads the default configuration for the dlr algorithm.
+# Other options change the look drastically! *
+net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$coarsen) 
 
-# Load a cooler palette
+# Load a cooler palette.
 library(RColorBrewer)
 
-# This function interpolates a palette with a higher number of colors than the original SET1
+# This function interpolates a palette with a higher number of colors than the original "Set1"
 # (Ignore warning here)
 getPalette = colorRampPalette(brewer.pal(15, "Set1"))
 
-# Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links.
+# Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links. **
 net.viz <- ggraph(tidynet, layout = net.layout) +
   geom_node_point(aes(size = degree, color = community)) +
   geom_node_label(aes(label = display.name, size = degree, color = community), repel = TRUE) +
   scale_colour_manual(values = getPalette(length(unique(nodes$community))))
 
-net.viz
+# Quick view
+# net.viz
 
-# Save network viz as a pdf.
+# Save network viz as a pdf.  Can play with resolution and size. *
 ggsave(plot = net.viz, "network_small_lv_degree.pdf", scale = 2, dpi = 500)
 
-# Explore smaller husserl network
-
+# Explore smaller husserl network.  
+# TODO: Pablo will turn this into a function
 husserl.cluster <- nodes %>%
   filter(name == "HUSSERL E") %>% 
   .$community
 
-husserl.net.undirected <- induced.subgraph(net, which(V(net)$community == husserl.cluster)) %>% 
+husserl.net.undirected <- induced.subgraph(net.directed, which(V(net.directed)$community == husserl.cluster)) %>% 
   as.undirected()
 husserl.clusters <- igraph::cluster_louvain(husserl.net.undirected)
-husserl.net.directed <- induced.subgraph(net, which(V(net)$community == husserl.cluster)) 
+husserl.net.directed <- induced.subgraph(net.directed, which(V(net.directed)$community == husserl.cluster)) 
 husserl.net.directed <- igraph::set.vertex.attribute(graph = husserl.net.directed, name = "community", 
                                     value = igraph::membership(husserl.clusters))
 husserl.net.directed <- igraph::set.vertex.attribute(graph = husserl.net.directed, name = "degree", value = degree(husserl.net.directed, mode = "in"))
