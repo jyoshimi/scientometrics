@@ -53,39 +53,54 @@ citing.matrix.clean <- citing.matrix.raw %>%
   select(-ANONYMOUS, -`NA`) %>%                           
   # Remove specific columns
   select(-`A CORRECTION`, -`A LUDW U FREIB HA`, -`AA VV`, -`AA XV`) %>% 
-  # Remove Hua columns.  TODO. May be too aggressive and remove Huang, etc.
-  select(-matches("Hua*")) %>% 
+  select(-`HUA ZHENGREN`, -`HUA DOK`) %>% # Remove confounds for Husserliana volumes. These authors have only 1 citation, so they'll get deleted anyway.
   # Removing columns with numbers
-  select(-matches("[[:digit:]]")) %>% 
+  select(-matches("[[:digit:]]"))
 
 # For inspection
 # write(unlist(unique(citing.matrix.clean[,"first.author"]),use.names = FALSE), 
 #       file = "~/Desktop/mainAuthors.txt")
 # write(sort(unique(colnames(citing.matrix.clean))), file = "~/Desktop/citedAuthors.txt")
 
-# Create shortened names: e.g. HEIDEGGER MARTIN -> HEIDEGGER M
-# Can do hand-wrangling to associate one regex of names with a shortened name
-# TODO: Consider whether this loses information, in particular people with same last name and first initial
-# TODO: DE P, DA SILVA, AL names
-shorten.name <- function(x){
+# Create shortened names: e.g. HEIDEGGER MARTIN -> HEIDEGGER M Can do
+# hand-wrangling to associate one regex of names with a shortened name TODO:
+# Consider whether this loses information, in particular people with same last
+# name and first initial TODO: DE P, DA SILVA, AL names TODO: Consider authors
+# cited only by last name. e.g. HEIDEGGER, ADORNO, etc. Should be turned into
+# complete name by hand?
+shorten.name <- function(x) {
   # Start with special cases
-  if(is.na(x)){return(NA)}
-  if(str_detect(x, "^ARISTOT[A-Z]+") & !(str_detect(x, "[[:space:]]"))){
-    short.name <- "ARISTOTLE"
-  }else if(str_detect(x, "^HUSSER[A-Z]*[[:space:]]E[A-Z]*")){
-    short.name <- "HUSSERL E"
+  if (is.na(x)) {
+    return(NA)
   }
-  if(str_detect(x, "^VAN DER|^VAN DEN|^VON DER")){
-    short.name <- str_extract(x, "^[A-Z]+[[:space:]][A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}")
-  }else if(str_detect(x, "^VAN |^VON ")){
-    short.name <- str_extract(x, "^[A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}")
+  if (str_detect(x, "ARISTO[A-Z]+[[:space:]]*")) {
+    return("ARISTOTLE")
+  }
+  # Now: HUSSERL and HUSSERLIANA
+  else if (str_detect(x, "HUSSER[A-Z]")) {
+    # Detects almost all instances of Husserl appearing
+    return("HUSSERL E")
+  } else if (str_detect(x, "^HUA$")) {
+    return("HUSSERL E")
+  } else if (str_detect(x, "^HUA[[:space:]]")) {
+    return("HUSSERL E")
+  }
+  # NOW: NAMES WITH SPACES
+  if (str_detect(x, "^VAN DER|^VAN DEN|^VON DER")) {
+    return(
+      str_extract(
+        x,
+        "^[A-Z]+[[:space:]][A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}"
+      )
+    )
+  } else if (str_detect(x, "^VAN |^VON ")) {
+    return(str_extract(x, "^[A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}"))
   } else{
     # The main algorithm applied to everyone. Special cases above
-    # Extracts the longest string followed by a space and then the 
+    # Extracts the longest string followed by a space and then the
     # first letter of the next string
-    short.name <- str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}")
+    return(str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}"))
   }
-  return(short.name)
 }
 
 # Shorten main author names
@@ -142,11 +157,13 @@ for(name in sort(colnames(citing.matrix.clean)[-1])){
 # Manually fix some authors (doing regex makes this extremely slow)
 # TODO: This is where some hand work should be done.  Are there other cases of this.
 # TODO: First try to change shorten.name above so this is not needed
-aristotle.columns <- colnames(new.citing.matrix) %>% .[str_detect(., "ARISTOT") & !(str_detect(., " "))] 
-new.aristotle.column <- apply(X = new.citing.matrix[,aristotle.columns], MARGIN = 1, FUN = sum)
-new.citing.matrix <- new.citing.matrix[, !(colnames(new.citing.matrix) %in% aristotle.columns)]
-new.citing.matrix <- cbind(new.citing.matrix, new.aristotle.column)
-colnames(new.citing.matrix)[ncol(new.citing.matrix)] <- "ARISTOTLE"
+# Pablo: I FIXED ARISTOTLE
+
+# aristotle.columns <- colnames(new.citing.matrix) %>% .[str_detect(., "ARISTOT") & !(str_detect(., " "))] 
+# new.aristotle.column <- apply(X = new.citing.matrix[,aristotle.columns], MARGIN = 1, FUN = sum)
+# new.citing.matrix <- new.citing.matrix[, !(colnames(new.citing.matrix) %in% aristotle.columns)]
+# new.citing.matrix <- cbind(new.citing.matrix, new.aristotle.column)
+# colnames(new.citing.matrix)[ncol(new.citing.matrix)] <- "ARISTOTLE"
 
 # For the complete matrix, remove any cited author with less than 1 
 # citation (that is, only 1 citing author cited them only 1 time)
