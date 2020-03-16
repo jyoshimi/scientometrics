@@ -2,6 +2,8 @@ library('bibliometrix')
 library('stringr')
 library('tidyverse')
 
+# Load and parse articles ------
+
 # In file: cited authors are the authors that receive the citations. 
 # citing authors are the authors that DO the citations.
 
@@ -26,6 +28,9 @@ if (file.exists(citations_file)) {
 
 # Pulls the cited authors from CR and adds that CR_AU to a new table
 parsed.articles <- metaTagExtraction(M = raw.articles, Field = "CR_AU")
+
+
+# Create and consolidate citation matrix ------
 
 # An article-by-cited-author matrix.
 # Each cell is a count of how many times an article (row) cited an author (column)
@@ -69,6 +74,11 @@ citing.matrix.clean <- citing.matrix.raw %>%
 # cited only by last name. e.g. HEIDEGGER, ADORNO, etc. Should be turned into
 # complete name by hand?
 shorten.name <- function(x) {
+  # Input:
+  #       `x` is a string with a full name of an author, ideally in the form LASTNAME FIRSTNAME
+  # Returns:
+  #       A string with a shortened version of that name, for most cases as LASTNAME INITIAL
+  
   # Start with special cases
   if (is.na(x)) {
     return(NA)
@@ -169,6 +179,9 @@ for(name in sort(colnames(citing.matrix.clean)[-1])){
 # citation (that is, only 1 citing author cited them only 1 time)
 new.citing.matrix <- new.citing.matrix[, colSums(new.citing.matrix) > 1]
 
+
+# Create small matrix ------
+
 # Create "Small matrix"
 small.threshold <- 5
 
@@ -177,6 +190,10 @@ small.citing.matrix <- new.citing.matrix[, colSums(new.citing.matrix) >= small.t
 # Also remove citing authors who cited only authors with less than small.threshold citations
 # That is, citing authors with only 0 now in their whole row
 small.citing.matrix <- small.citing.matrix[rowSums(small.citing.matrix) >= 0,]
+
+
+# Save matrices ------
+
 
 # Transform both matrices into sparse for backup saving 
 # This uses the Matrix package
@@ -191,6 +208,10 @@ small.citing.matrix <- small.citing.matrix %>%
 write(colnames(small.citing.matrix), "small_matrix_colnames.txt")
 write(row.names(small.citing.matrix), "small_matrix_rownames.txt")
 Matrix::writeMM(small.citing.matrix, "small_matrix.txt")
+
+
+# Make edge lists ------
+
 
 # Now make the edge list for the network.
 # This is a directed edge list, so it's a "long" (vs "wide") version of the matrix.
