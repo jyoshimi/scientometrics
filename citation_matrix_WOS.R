@@ -94,7 +94,14 @@ shorten.name <- function(x) {
     return("HUSSERL E")
   } else if (str_detect(x, "^HUA[[:space:]]")) {
     return("HUSSERL E")
+  } else if (str_detect(x,"HUSERL")) {
+    return ("HUSSERL E")
   }
+  
+  if (str_detect(x, "^MERLEAU.*")) {
+    return ("MERLEAUPONTY M")
+  }
+  
   # NOW: NAMES WITH SPACES
   if (str_detect(x, "^VAN DER|^VAN DEN|^VON DER")) {
     return(

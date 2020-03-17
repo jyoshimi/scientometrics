@@ -11,27 +11,31 @@ library(RColorBrewer)
 # change this to try other community algorithms. other options: 
 # cluster_fast_greedy, cluster_optimal, cluster_infomap.
 # To see all the options, type igraph::cluster_ and press `TAB`
-detect.community <- igraph::cluster_louvain 
+# Optimal and edge_betweenness are slow
+# Meaningful structure from fg, louvain, walktrap, and cluster spinglass
+# All others return few commnities or take a long time to run
+detect.community <- igraph::cluster_fast_greedy
 
-# Load a cooler palette.
+# Load a cooler palette. 
+# Returns a warning you can ignore
 getPalette = colorRampPalette(brewer.pal(15, "Set1"))
 
 # Change this to where the files are stored.
-# Choices here are small_edge_list.csv and complete_edge_list
-edge.list <- read_csv('small_edge_list.csv') %>% 
+# Choices here are small_edge_list.csv and complete_edge_list.csv
+edge.list <- read_csv('complete_edge_list.csv') %>% 
   rename(weight = Weight)
 
 
 # Create network ------
 
 # Make an undirected graph first and removing resulting redundant edges with simplify
-# This removes the distinction between citing and cited authors
+# This removes the distinction between citing and cited authors.
+# Ignore warning
 net.undirected <- igraph::graph_from_data_frame(edge.list, directed = FALSE) %>% 
   simplify()
 
 
 # Run chosen community detection algorithm
-
 net.communities <- detect.community(net.undirected)
 
 # Build a igraph network, which is a directed network built from the edge list
@@ -59,14 +63,12 @@ nodes <- tidynet %>%
   as_tibble()
 
 # Uncomment to save list of 5 top in-degree authors in each cluster
-# use community or community_fg
 top.members <- nodes %>%
   group_by(community) %>%
   top_n(5, degree) %>%
   arrange(community, desc(degree)) %>%
   select(name, degree, community) 
-
-# write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
+write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
 
 
 # Visualizing the network ------         
@@ -78,7 +80,7 @@ top.members <- nodes %>%
 # Also recode community as a categorical variable
 tidynet <- tidynet %>%
   tidygraph::activate(nodes) %>% 
-  mutate(display.name = ifelse(degree > 50, name, NA),
+  mutate(display.name = ifelse(degree > 100, name, NA),
          community = factor(community))
 
 # Locations of nodes for plotted network. It's saved as a dataframe of x and y
@@ -86,7 +88,8 @@ tidynet <- tidynet %>%
 # plotting. layout.drl is the algorithm OpenOrd was based on.
 # dlr_defaults$default loads the default configuration for the dlr algorithm.
 # Other options change the look drastically! *
-net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$coarsen) 
+# Also try net.undirected
+net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default) 
 
 # Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links. **
 net.viz <- ggraph(tidynet, layout = net.layout) +
@@ -160,8 +163,14 @@ get.sub.net <- function(net, author, threshold = 10){
               visualization = author.viz))
 }
 
-husserl.net <- get.sub.net(net.directed, "HUSSERL E")
+husserl.net <- get.sub.net(net.directed, "HUSSERL E", 25)
 husserl.net$visualization  
+husserl.top.members <- husserl.net$nodes.attributes %>%
+  group_by(community) %>%
+  top_n(5, degree) %>%
+  arrange(community, desc(degree)) %>%
+  select(name, degree, community) 
+write_csv(husserl.top.members, "husserl_communities.csv")
 
 marx.net <- get.sub.net(net.directed, "MARX K")
 marx.net$visualization  
@@ -175,5 +184,5 @@ sartre.net$visualization
 dreyfus.net <- get.sub.net(net.directed, "DREYFUS H")
 dreyfus.net$visualization
 
-searle.net <- get.sub.net(net.directed, "SEARLE J", 5) # Don't understand why this one doesn't show labels.
+searle.net <- get.sub.net(net.directed, "SEARLE J", 15) # Don't understand why this one doesn't show labels.
 searle.net$visualization
