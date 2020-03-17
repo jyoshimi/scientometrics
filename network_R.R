@@ -14,7 +14,7 @@ library(RColorBrewer)
 # Optimal and edge_betweenness are slow
 # Meaningful structure from fg, louvain, walktrap, and cluster spinglass
 # All others return few commnities or take a long time to run
-detect.community <- igraph::cluster_fast_greedy
+detect.community <- igraph::cluster_louvain
 
 # Load a cooler palette. 
 # Returns a warning you can ignore
@@ -22,7 +22,7 @@ getPalette = colorRampPalette(brewer.pal(15, "Set1"))
 
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list.csv
-edge.list <- read_csv('complete_edge_list.csv') %>% 
+edge.list <- read_csv('small_edge_list.csv') %>% 
   rename(weight = Weight)
 
 
@@ -56,7 +56,7 @@ net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "commu
 # This is used for all graphing
 tidynet <- tidygraph::as_tbl_graph(net.directed)
 
-# Get nodes as a dataframe. 
+# Get nodes as a dataframe
 # Useful to view
 nodes <- tidynet %>% 
   tidygraph::activate(nodes) %>% 
@@ -69,6 +69,18 @@ top.members <- nodes %>%
   arrange(community, desc(degree)) %>%
   select(name, degree, community) 
 write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
+
+# Set edge weights by community
+# From https://stackoverflow.com/questions/16390221/how-to-make-grouped-layout-in-igraph
+weight.community=function(row,membership,weigth.within,weight.between){
+  if(as.numeric(membership[which(names(membership)==row[1])])==as.numeric(membership[which(names(membership)==row[2])])){
+    weight=weigth.within
+  }else{
+    weight=weight.between
+  }
+  return(weight)
+}
+E(g)$weight=apply(get.edgelist(g),1,weight.community,membership,10,1)
 
 
 # Visualizing the network ------         
@@ -88,8 +100,12 @@ tidynet <- tidynet %>%
 # plotting. layout.drl is the algorithm OpenOrd was based on.
 # dlr_defaults$default loads the default configuration for the dlr algorithm.
 # Other options change the look drastically! *
+# Can also try different things under layout
 # Also try net.undirected
-net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default) 
+# net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default, weights=E(net.directed)$weight) 
+# net.layout <- igraph::layout.fruchterman.reingold(net.directed, weights=E(net.directed)$weight) 
+# net.layout <- igraph::layout.auto(net.directed, weights=E(net.directed)$weight) 
+net.layout <- igraph::layout.auto(net.directed, weights=E(net.directed)$weight)
 
 # Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links. **
 net.viz <- ggraph(tidynet, layout = net.layout) +
@@ -101,7 +117,7 @@ net.viz <- ggraph(tidynet, layout = net.layout) +
 net.viz
 
 # Uncomment line to save network viz as a pdf.  Can play with resolution and size. *
-# ggsave(plot = net.viz, "network_small_lv_degree.pdf", height = 14, width = 14, units = "in", dpi = 500)
+ggsave(plot = net.viz, "citation_network.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
 
 # Visualizing sub networks ------
