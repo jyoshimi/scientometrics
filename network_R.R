@@ -11,10 +11,20 @@ library(RColorBrewer)
 # change this to try other community algorithms. other options: 
 # cluster_fast_greedy, cluster_optimal, cluster_infomap.
 # To see all the options, type igraph::cluster_ and press `TAB`
-detect.community <- igraph::cluster_louvain 
+detect.community <- igraph::spinglass.community
 
 # Load a cooler palette.
-getPalette = colorRampPalette(brewer.pal(15, "Set1"))
+# getPalette = colorRampPalette(brewer.pal(15, "Set1"))
+
+color.palette <- c("#67bf46",
+                   "#5150fc",
+                   "#415900",
+                   "#d300c7",
+                   "#433c09",
+                   "#6687ff",
+                   "#d30057",
+                   "#0065a3",
+                   "#aa6985")
 
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list
@@ -29,13 +39,14 @@ edge.list <- read_csv('small_edge_list.csv') %>%
 net.undirected <- igraph::graph_from_data_frame(edge.list, directed = FALSE) %>% 
   simplify()
 
+# Build a igraph network, which is a directed network built from the edge list
+net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
+
 
 # Run chosen community detection algorithm
 
-net.communities <- detect.community(net.undirected)
+net.communities <- detect.community(net.directed)
 
-# Build a igraph network, which is a directed network built from the edge list
-net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
 
 # Add eigenvector centrality, indegree and community as vertex attributes to the igraph network.
 # Used  for plotting.
@@ -86,13 +97,64 @@ tidynet <- tidynet %>%
 # plotting. layout.drl is the algorithm OpenOrd was based on.
 # dlr_defaults$default loads the default configuration for the dlr algorithm.
 # Other options change the look drastically! *
-net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$coarsen) 
+
+# net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default, weights = (E(net.directed)$weight * group.edges)) 
+# net.layout <- igraph::layout.pl(net.directed)
+# net.layout <- igraph::layout_nicely(net.directed)
+# net.layout <- igraph::layout_with_fr(net.directed, niter = 100, weights = E(net.directed)$weight)
+
+edge.weights <- function(community, network, weight.within = 1.5, weight.between = 1) {
+  bridges <- crossing(communities = community, graph = network)
+  weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
+  return(weights) 
+}
+group.edges <- edge.weights(net.communities, net.directed)
+
+net.layout <- igraph::layout_with_fr(net.directed, niter = 10000, weights = (E(net.directed)$weight * group.edges))
+net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default, weights = (E(net.directed)$weight * group.edges)) 
+
+opposite.weights <- function(community, network, weight.within = 0, weight.between = 1) {
+  bridges <- crossing(communities = community, graph = network)
+  weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
+  return(weights) 
+}
+
+tidynet <- tidynet %>% 
+  activate(edges) %>% 
+  mutate(inverse.weight = (E(net.directed)$weight * opposite.weights(net.communities, net.directed)) ^ 2)
+
 
 # Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links. **
 net.viz <- ggraph(tidynet, layout = net.layout) +
   geom_node_point(aes(size = degree, color = community)) +
   geom_node_label(aes(label = display.name, size = degree, color = community), repel = TRUE) +
   scale_colour_manual(values = getPalette(length(unique(nodes$community))))
+
+small.tidy <- tidynet %>% 
+  activate(nodes) %>% 
+  mutate(display.name = ifelse(degree > 75, name, NA)) %>% 
+  filter(degree > 15) %>% 
+  mutate(community = factor(as.numeric(community), labels = c(1:length(unique(community))), exclude = TRUE)) %>%  
+  activate(edges) %>% 
+  filter(weight > 2, inverse.weight > 0) 
+community.vector <- small.tidy %>% 
+  activate(nodes) %>% 
+  as_tibble %>% 
+  droplevels() %>% 
+  .$community
+small.tidy <- small.tidy %>% 
+  activate(edges) %>% 
+  mutate(community = community.vector[from])
+
+ggraph(small.tidy, layout = 'hive', axis = community, sort.by = degree) +
+  geom_edge_hive(aes(width = log(weight), edge_color = community, alpha = log(weight)), arrow = arrow(length = unit(4, 'mm')),
+                 end_cap = circle(1, 'mm')) +
+  geom_node_label(aes(label = display.name, size = log(degree), color = community), repel = TRUE) +
+  geom_axis_hive() + 
+  coord_fixed() + 
+  scale_color_manual(values = color.palette) +
+  scale_edge_color_manual(values = color.palette, limits = levels(community.vector))
+
 
 # Quick view
 net.viz
@@ -131,10 +193,11 @@ get.sub.net <- function(net, author, threshold = 10){
   
   author.net.undirected <- induced.subgraph(net, which(V(net)$community == author.community)) %>% 
     as.undirected()
-  author.clusters <- detect.community(author.net.undirected)
   author.net.directed <- induced.subgraph(net, which(V(net)$community == author.community)) 
+  author.clusters <- detect.community(author.net.directed)
+  
   author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "community", 
-                                                       value = igraph::membership(author.clusters))
+                                                      value = igraph::membership(author.clusters))
   author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "degree", value = degree(author.net.directed, mode = "in"))
   
   tidy.author.net <- tidygraph::as_tbl_graph(author.net.directed)
@@ -147,21 +210,58 @@ get.sub.net <- function(net, author, threshold = 10){
     tidygraph::activate(nodes) %>% 
     mutate(community = factor(community),
            display.name = ifelse(degree > threshold, name, NA))
+  tidy.author.net <- tidy.author.net %>% 
+    activate(edges) %>% 
+    mutate(inverse.weight = (E(author.net.directed)$weight * opposite.weights(author.clusters, author.net.directed)) ^ 2)
+  # author.net.layout <- igraph::layout.drl(author.net.directed, 
+  # options = drl_defaults$default)
   
-  author.net.layout <- igraph::layout.drl(author.net.directed, 
-                                       options = drl_defaults$default)
+  author.group.edges <- edge.weights(author.clusters, author.net.directed)
   
+  author.net.layout <- igraph::layout.drl(author.net.directed, options = drl_defaults$default, weights = (E(author.net.directed)$weight * author.group.edges))
+
+
   author.viz <- ggraph(tidy.author.net, layout = author.net.layout) +
     geom_node_point(aes(size = degree, color = community)) +
     geom_node_label(aes(label = display.name, size = degree, color = community), repel = TRUE) +
     scale_colour_manual(values = getPalette(length(unique(author.nodes$community))))
+  
+  small.tidy.author <- tidy.author.net %>% 
+    activate(nodes) %>% 
+    mutate(display.name = ifelse(degree > 15, name, NA)) %>% 
+    filter(degree > 5) %>% 
+    mutate(community = factor(as.numeric(community), labels = c(1:length(unique(community))), exclude = TRUE)) %>%  
+    activate(edges) %>% 
+    filter(weight > 2, inverse.weight > 0) 
+  author.community.vector <- small.tidy.author %>% 
+    activate(nodes) %>% 
+    as_tibble %>% 
+    droplevels() %>% 
+    .$community
+  small.tidy.author <- small.tidy.author %>% 
+    activate(edges) %>% 
+    mutate(community = author.community.vector[from])
+  
+  author.hive <- ggraph(small.tidy.author, layout = 'hive', axis = community, sort.by = degree) +
+    geom_edge_hive(aes(width = log(weight), edge_color = community, alpha = log(weight)), arrow = arrow(length = unit(4, 'mm')),
+                   end_cap = circle(1, 'mm')) +
+    geom_node_label(aes(label = display.name, size = log(degree), color = community), repel = TRUE) +
+    geom_axis_hive() + 
+    coord_fixed() + 
+    scale_color_manual(values = color.palette) +
+    scale_edge_color_manual(values = color.palette, limits = levels(author.community.vector))  
+    
+    
+  
   return(list(igraph.network = author.net.directed, 
               nodes.attributes = author.nodes, 
-              visualization = author.viz))
+              visualization = author.viz,
+              hive = author.hive))
 }
 
 husserl.net <- get.sub.net(net.directed, "HUSSERL E")
-husserl.net$visualization  
+husserl.net$visualization
+husserl.net$hive
 
 marx.net <- get.sub.net(net.directed, "MARX K")
 marx.net$visualization  
