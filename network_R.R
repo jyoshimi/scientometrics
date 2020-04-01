@@ -9,27 +9,18 @@ library(RColorBrewer)
 # Preliminary ------
 
 # Load a cooler palette.
-# getPalette = colorRampPalette(brewer.pal(15, "Set1"))
+# getPalette = colorRampPalette(brewer.pal(15, "Set1"))  # *
+color.palette <- c("#67bf46", "#5150fc", "#415900", "#d300c7", "#433c09",
+                   "#6687ff", "#d30057", "#0065a3", "#aa6985",
+                    "black", "blue", "yellow", "green", "gray", "pink")
 
-color.palette <- c("#67bf46",
-                   "#5150fc",
-                   "#415900",
-                   "#d300c7",
-                   "#433c09",
-                   "#6687ff",
-                   "#d30057",
-                   "#0065a3",
-                   "#aa6985")
-
-# Optimal and edge_betweenness are slow
-# Meaningful structure from fg, louvain, walktrap, and cluster spinglass
+# Meaningful structure from fastgreedy.community, louvain, walktrap, and spinglass
 # All others return few commnities or take a long time to run
-### Pablo: I got good results using spinglass. Also, it supports directed networks.
-detect.community <- igraph::spinglass.community
+detect.community <- igraph::cluster_spinglass
 
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list.csv
-edge.list <- read_csv('small_edge_list.csv') %>%
+edge.list <- read_csv('complete_edge_list.csv') %>%
   rename(weight = Weight)
 
 
@@ -46,7 +37,8 @@ net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
 
 
 # Run chosen community detection algorithm
-net.communities <- detect.community(net.directed)
+# * Must change depending on which detection alg is used
+net.communities <- detect.community(net.undirected)
 
 # Add eigenvector centrality, indegree and community as vertex attributes to the igraph network.
 # Used  for plotting.
@@ -69,6 +61,11 @@ nodes <- tidynet %>%
   tidygraph::activate(nodes) %>%
   as_tibble()
 
+# Get top by indegree
+tops <- nodes %>% top_n(50,degree) %>% 
+  arrange(desc(degree))
+write_csv(tops,"tops.csv")
+
 # Uncomment to save list of 5 top in-degree authors in each cluster
 top.members <- nodes %>%
   group_by(community) %>%
@@ -76,18 +73,6 @@ top.members <- nodes %>%
   arrange(community, desc(degree)) %>%
   select(name, degree, community)
 write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
-
-# Set edge weights by community
-# From https://stackoverflow.com/questions/16390221/how-to-make-grouped-layout-in-igraph
-weight.community=function(row,membership,weigth.within,weight.between){
-  if(as.numeric(membership[which(names(membership)==row[1])])==as.numeric(membership[which(names(membership)==row[2])])){
-    weight=weigth.within
-  }else{
-    weight=weight.between
-  }
-  return(weight)
-}
-E(g)$weight=apply(get.edgelist(g),1,weight.community,membership,10,1)
 
 
 # Visualizing the network ------
@@ -102,43 +87,27 @@ tidynet <- tidynet %>%
   mutate(display.name = ifelse(degree > 100, name, NA),
          community = factor(community))
 
-# Locations of nodes for plotted network. It's saved as a dataframe of x and y
-# locations for each node. This is faster than doing it at the moment of
-# plotting. layout.drl is the algorithm OpenOrd was based on.
-# dlr_defaults$default loads the default configuration for the dlr algorithm.
-# Other options change the look drastically! *
-# Can also try different things under layout
-# Also try net.undirected
-# net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default, weights=E(net.directed)$weight)
-# net.layout <- igraph::layout.fruchterman.reingold(net.directed, weights=E(net.directed)$weight)
-# net.layout <- igraph::layout.auto(net.directed, weights=E(net.directed)$weight)
-# net.layout <- igraph::layout.auto(net.directed, weights=E(net.directed)$weight)
-
-
-## HERE: TRYING SMALL MODIFICATION OF WEIGHTS TO EXAGGERATE COMMUNITY STRUCTURE
-
-# Generate a weight matrix where within-community weights are multiplied by 1.5, and between-community weights are left intact.
+# Exaggerate community structure (not used for all)
+# Rescale within and between community weights 
+# Inspired by https://stackoverflow.com/questions/16390221/how-to-make-grouped-layout-in-igraph
 edge.weights <- function(community, network, weight.within = 1.5, weight.between = 1) {
   bridges <- crossing(communities = community, graph = network)
   weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
   return(weights)
 }
-group.edges <- edge.weights(net.communities, net.directed)
+# change below to directed or undirected *
+group.edges <- edge.weights(net.communities, net.directed) 
 
-# Use these weights to modify the weights provided to DRL
+# Layout sets locations of nodes for plotted network. 
+# It's saved as a dataframe of x and y locations for each node. 
+# This is faster than doing it at the moment of
+# plotting. layout.drl is the algorithm OpenOrd is based on.
+# dlr_defaults$default loads the default configuration for the dlr algorithm.
+# Other options change the look drastically! **
+# Comment/uncomment below
+# net.layout <- igraph::layout.fruchterman.reingold(net.directed, weights=E(net.directed)$weight)
+# net.layout <- igraph::layout.auto(net.directed, weights=E(net.directed)$weight)
 net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default, weights = (E(net.directed)$weight * group.edges))
-
-
-# This hacky function generates a field for each edge that's 0 if it's a within-community edge. Useful (I think??) for the hive plot. Probably a better way of doing this.
-opposite.weights <- function(community, network, weight.within = 0, weight.between = 1) {
-  bridges <- crossing(communities = community, graph = network)
-  weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
-  return(weights)
-}
-
-tidynet <- tidynet %>%
-  activate(edges) %>%
-  mutate(inverse.weight = (E(net.directed)$weight * opposite.weights(net.communities, net.directed)) ^ 2)
 
 # Plot network using colors for communities, repel the labels so they don't overlap, and don't plot the links. **
 # This uses the modified weights to exaggerate the structure.
@@ -153,10 +122,34 @@ net.viz
 # Uncomment line to save network viz as a pdf.  Can play with resolution and size. *
 ggsave(plot = net.viz, "citation_network.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
+# Uncomment to save for Gephi
+# TODO: Pablo have a look?
+# gephi = igraph.to.gexf(net.directed, position = net.layout)
+
+#
+# Hive stuff------
+#
+
+# This hacky function generates a field for each edge that's 0 if it's a within-community edge. 
+# Useful (I think??) for the hive plot. Probably a better way of doing this.
+# TODO Move this below?
+opposite.weights <- function(community, network, weight.within = 0, weight.between = 1) {
+  bridges <- crossing(communities = community, graph = network)
+  weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
+  return(weights)
+}
+
+tidynet <- tidynet %>%
+  activate(edges) %>%
+  mutate(inverse.weight = (E(net.directed)$weight * opposite.weights(net.communities, net.directed)) ^ 2)
+
+# Use this to fine tune the hive display *
 small.tidy <- tidynet %>%
   activate(nodes) %>%
+  # Labels
   mutate(display.name = ifelse(degree > 75, name, NA)) %>%
-  filter(degree > 15) %>%
+  # Delete nodes with low indegree
+  filter(degree > 15) %>% 
   # Exclude = TRUE gets rid of unused factor levels
   mutate(community = factor(as.numeric(community), labels = c(1:length(unique(community))), exclude = TRUE)) %>%
   activate(edges) %>%
@@ -173,15 +166,16 @@ small.tidy <- small.tidy %>%
   activate(edges) %>%
   mutate(community = community.vector[from])
 
-# Plot the hive. Each axis is a community. Generate arrows for between community edges larger than 2 to display relationships between communities.
+# Plot the hive. Each axis is a community. 
+# Generate arrows for between community edges larger than 2 to display relationships between communities.
 hive.plot <- ggraph(small.tidy, layout = 'hive', axis = community, sort.by = degree) +
   geom_edge_hive(aes(width = log(weight), edge_color = community, alpha = log(weight)), arrow = arrow(length = unit(4, 'mm')),
                  end_cap = circle(1, 'mm')) +
   geom_node_label(aes(label = display.name, size = log(degree), color = community), repel = TRUE) +
   geom_axis_hive() +
   coord_fixed() +
-  scale_color_manual(values = color.palette) +
-  scale_edge_color_manual(values = color.palette, limits = levels(community.vector))
+  scale_color_manual(values = c(color.palette, "red", "blue")) +
+  scale_edge_color_manual(values = c(color.palette, "red", "blue"), limits = levels(community.vector))
 
 # Quick view
 hive.plot
@@ -191,6 +185,8 @@ ggsave(plot = hive.plot, "hive_plot.pdf", height = 14, width = 14, units = "in",
 
 
 # Visualizing sub networks ------
+
+# TODO: Fix for undirected case
 
 # Function to extract sub network info
 get.sub.net <- function(net, author, threshold = 10){
@@ -247,7 +243,6 @@ get.sub.net <- function(net, author, threshold = 10){
 
   author.net.layout <- igraph::layout.drl(author.net.directed, options = drl_defaults$default, weights = (E(author.net.directed)$weight * author.group.edges))
 
-
   author.viz <- ggraph(tidy.author.net, layout = author.net.layout) +
     geom_node_point(aes(size = degree, color = community)) +
     geom_node_label(aes(label = display.name, size = degree, color = community), repel = TRUE) +
@@ -278,29 +273,54 @@ get.sub.net <- function(net, author, threshold = 10){
     scale_color_manual(values = color.palette) +
     scale_edge_color_manual(values = color.palette, limits = levels(author.community.vector))
 
-
-
   return(list(igraph.network = author.net.directed,
               nodes.attributes = author.nodes,
               visualization = author.viz,
               hive = author.hive))
 }
 
+# Manually use the get.sub.net function for communities of interest
+
+# Husserl sub-community
 husserl.net <- get.sub.net(net.directed, "HUSSERL E")
-husserl.net$visualization
-husserl.net$hive
+husserl.net$visualization # Network plot object
+husserl.net$hive # Hive plot object
 husserl.top.members <- husserl.net$nodes.attributes %>%
   group_by(community) %>%
   top_n(5, degree) %>%
   arrange(community, desc(degree)) %>%
   select(name, degree, community)
 write_csv(husserl.top.members, "husserl_communities.csv")
+ggsave(plot = husserl.net$hive, "husserl_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+
+# Heidegger sub-community
+heidegger.net <- get.sub.net(net.directed, "HEIDEGGER M")
+heidegger.net$visualization # Network plot object
+heidegger.net$hive # Hive plot object
+heidegger.top.members <- heidegger.net$nodes.attributes %>%
+  group_by(community) %>%
+  top_n(5, degree) %>%
+  arrange(community, desc(degree)) %>%
+  select(name, degree, community)
+write_csv(heidegger.top.members, "heidegger_communities.csv")
+ggsave(plot = heidegger.net$hive, "heidegger_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+
+# Merleauponty sub-community
+merleauponty.net <- get.sub.net(net.directed, "MERLEAUPONTY M")
+merleauponty.net$visualization # Network plot object
+merleauponty.net$hive # Hive plot object
+merleauponty.top.members <- merleauponty.net$nodes.attributes %>%
+  group_by(community) %>%
+  top_n(5, degree) %>%
+  arrange(community, desc(degree)) %>%
+  select(name, degree, community)
+write_csv(merleauponty.top.members, "merleauponty_communities.csv")
+ggsave(plot = merleauponty.net$hive, "merleauponty.net_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+
 
 marx.net <- get.sub.net(net.directed, "MARX K")
 marx.net$visualization
 
-heidegger.net <- get.sub.net(net.directed, "HEIDEGGER M")
-heidegger.net$visualization
 
 sartre.net <- get.sub.net(net.directed, "SARTRE J")
 sartre.net$visualization

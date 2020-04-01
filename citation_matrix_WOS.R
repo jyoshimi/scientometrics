@@ -182,7 +182,7 @@ for(name in sort(colnames(citing.matrix.clean)[-1])){
 # new.citing.matrix <- cbind(new.citing.matrix, new.aristotle.column)
 # colnames(new.citing.matrix)[ncol(new.citing.matrix)] <- "ARISTOTLE"
 
-# For the complete matrix, remove any cited author with less than 1 
+# Cleanup: Remove any cited author with less than 1 
 # citation (that is, only 1 citing author cited them only 1 time)
 new.citing.matrix <- new.citing.matrix[, colSums(new.citing.matrix) > 1]
 
