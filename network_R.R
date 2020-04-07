@@ -2,25 +2,22 @@ library(tidyverse)
 library(igraph)
 library(tidygraph)
 library(ggraph)
-library(RColorBrewer)
+# Load a cooler/larger palette. Check possibilities of pals package here: http://127.0.0.1:10359/library/pals/doc/pals_examples.html
+# This package is used in the ggplot statements.
+library(pals)
 
 # Things to fiddle with marked with *
 
 # Preliminary ------
 
-# Load a cooler palette.
-# getPalette = colorRampPalette(brewer.pal(15, "Set1"))  # *
-color.palette <- c("#67bf46", "#5150fc", "#415900", "#d300c7", "#433c09",
-                   "#6687ff", "#d30057", "#0065a3", "#aa6985",
-                    "black", "blue", "yellow", "green", "gray", "pink")
 
 # Meaningful structure from fastgreedy.community, louvain, walktrap, and spinglass
 # All others return few commnities or take a long time to run
-detect.community <- igraph::cluster_spinglass
+detect.community <- igraph::cluster_louvain
 
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list.csv
-edge.list <- read_csv('complete_edge_list.csv') %>%
+edge.list <- read_csv('small_edge_list.csv') %>%
   rename(weight = Weight)
 
 
@@ -40,11 +37,16 @@ net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
 # * Must change depending on which detection alg is used
 net.communities <- detect.community(net.undirected)
 
-# Add eigenvector centrality, indegree and community as vertex attributes to the igraph network.
+
+
+# Add indegree, WEIGHTED in-degree (a.k.a. strength) and 
+# community as vertex attributes to the igraph network.
 # Used  for plotting.
 # Added as attributes to the directed igraph
 net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "degree",
                                              value = degree(net.directed, mode = "in"))
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "strength",
+                                             value = strength(net.directed, mode = "in", loops = FALSE))
 net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "community",
                                              value = igraph::membership(net.communities))
 
@@ -62,7 +64,8 @@ nodes <- tidynet %>%
   as_tibble()
 
 # Get top by indegree
-tops <- nodes %>% top_n(50,degree) %>% 
+tops <- nodes %>% 
+  top_n(50,degree) %>% 
   arrange(desc(degree))
 write_csv(tops,"tops.csv")
 
@@ -74,6 +77,16 @@ top.members <- nodes %>%
   select(name, degree, community)
 write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
 
+# Get community degree stats: sum in-degree, mean-indegree, mean eigen
+# Especially useful for Gephi
+
+com.stats <- nodes %>% 
+  group_by(community) %>% 
+  summarize(sum.degree = sum(degree), 
+            mean.degree = mean(degree), 
+            sum.strength = sum(strength),
+            mean.strength = mean(strength))
+write_csv(com.stats, "community_stats.csv") # uncomment this line to save result to csv
 
 # Visualizing the network ------
 
@@ -98,6 +111,17 @@ edge.weights <- function(community, network, weight.within = 1.5, weight.between
 # change below to directed or undirected *
 group.edges <- edge.weights(net.communities, net.directed) 
 
+# Set weighted edges in igraph object for exporting
+
+layout.weights <- igraph::edge.attributes(net.directed)[[1]] * group.edges
+net.directed <- igraph::set.edge.attribute(graph = net.directed, name = "weight",
+                                             value = layout.weights)
+# SAVE THE GRAPH in GRAPHML format.
+# This format can be read by GEPHI.
+
+net.directed %>% 
+  write_graph(file = "gephi_test.graphml", format = "graphml")
+
 # Layout sets locations of nodes for plotted network. 
 # It's saved as a dataframe of x and y locations for each node. 
 # This is faster than doing it at the moment of
@@ -114,7 +138,7 @@ net.layout <- igraph::layout.drl(net.directed, options = drl_defaults$default, w
 net.viz <- ggraph(tidynet, layout = net.layout) +
   geom_node_point(aes(size = degree, color = community)) +
   geom_node_label(aes(label = display.name, size = degree, color = community), repel = TRUE) +
-  scale_colour_manual(values = getPalette(length(unique(nodes$community))))
+  scale_colour_manual(values = as.vector(alphabet(length(unique(nodes$community))))) # Generates a palette with number of colors = number of communities. as.vector needed because ggplot doesn't like colors to have names.
 
 # Quick view
 net.viz
@@ -149,7 +173,7 @@ small.tidy <- tidynet %>%
   # Labels
   mutate(display.name = ifelse(degree > 75, name, NA)) %>%
   # Delete nodes with low indegree
-  filter(degree > 15) %>% 
+  filter(degree > 25) %>% 
   # Exclude = TRUE gets rid of unused factor levels
   mutate(community = factor(as.numeric(community), labels = c(1:length(unique(community))), exclude = TRUE)) %>%
   activate(edges) %>%
@@ -174,8 +198,8 @@ hive.plot <- ggraph(small.tidy, layout = 'hive', axis = community, sort.by = deg
   geom_node_label(aes(label = display.name, size = log(degree), color = community), repel = TRUE) +
   geom_axis_hive() +
   coord_fixed() +
-  scale_color_manual(values = c(color.palette, "red", "blue")) +
-  scale_edge_color_manual(values = c(color.palette, "red", "blue"), limits = levels(community.vector))
+  scale_color_manual(values = as.vector(alphabet(length(unique(community.vector))))) +
+  scale_edge_color_manual(values = as.vector(alphabet(length(unique(community.vector)))), limits = levels(community.vector))
 
 # Quick view
 hive.plot
@@ -217,7 +241,7 @@ get.sub.net <- function(net, author, threshold = 10){
   author.net.undirected <- induced.subgraph(net, which(V(net)$community == author.community)) %>%
     as.undirected()
   author.net.directed <- induced.subgraph(net, which(V(net)$community == author.community))
-  author.clusters <- detect.community(author.net.directed)
+  author.clusters <- detect.community(author.net.undirected)
 
   author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "community",
                                                       value = igraph::membership(author.clusters))
@@ -236,8 +260,7 @@ get.sub.net <- function(net, author, threshold = 10){
   tidy.author.net <- tidy.author.net %>%
     activate(edges) %>%
     mutate(inverse.weight = (E(author.net.directed)$weight * opposite.weights(author.clusters, author.net.directed)) ^ 2)
-  # author.net.layout <- igraph::layout.drl(author.net.directed,
-  # options = drl_defaults$default)
+ 
 
   author.group.edges <- edge.weights(author.clusters, author.net.directed)
 
@@ -246,11 +269,11 @@ get.sub.net <- function(net, author, threshold = 10){
   author.viz <- ggraph(tidy.author.net, layout = author.net.layout) +
     geom_node_point(aes(size = degree, color = community)) +
     geom_node_label(aes(label = display.name, size = degree, color = community), repel = TRUE) +
-    scale_colour_manual(values = getPalette(length(unique(author.nodes$community))))
+    scale_colour_manual(values = as.vector(alphabet(length(unique(author.nodes$community)))))
 
   small.tidy.author <- tidy.author.net %>%
     activate(nodes) %>%
-    mutate(display.name = ifelse(degree > 15, name, NA)) %>%
+    mutate(display.name = ifelse(degree > threshold, name, NA)) %>%
     filter(degree > 5) %>%
     mutate(community = factor(as.numeric(community), labels = c(1:length(unique(community))), exclude = TRUE)) %>%
     activate(edges) %>%
@@ -270,8 +293,8 @@ get.sub.net <- function(net, author, threshold = 10){
     geom_node_label(aes(label = display.name, size = log(degree), color = community), repel = TRUE) +
     geom_axis_hive() +
     coord_fixed() +
-    scale_color_manual(values = color.palette) +
-    scale_edge_color_manual(values = color.palette, limits = levels(author.community.vector))
+    scale_color_manual(values = as.vector(alphabet(length(unique(author.community.vector))))) +
+    scale_edge_color_manual(values = as.vector(alphabet(length(unique(author.community.vector)))), limits = levels(author.community.vector))
 
   return(list(igraph.network = author.net.directed,
               nodes.attributes = author.nodes,
@@ -282,7 +305,7 @@ get.sub.net <- function(net, author, threshold = 10){
 # Manually use the get.sub.net function for communities of interest
 
 # Husserl sub-community
-husserl.net <- get.sub.net(net.directed, "HUSSERL E")
+husserl.net <- get.sub.net(net.directed, "HUSSERL E", threshold = 20)
 husserl.net$visualization # Network plot object
 husserl.net$hive # Hive plot object
 husserl.top.members <- husserl.net$nodes.attributes %>%
@@ -294,7 +317,7 @@ write_csv(husserl.top.members, "husserl_communities.csv")
 ggsave(plot = husserl.net$hive, "husserl_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
 # Heidegger sub-community
-heidegger.net <- get.sub.net(net.directed, "HEIDEGGER M")
+heidegger.net <- get.sub.net(net.directed, "HEIDEGGER M", threshold = 20)
 heidegger.net$visualization # Network plot object
 heidegger.net$hive # Hive plot object
 heidegger.top.members <- heidegger.net$nodes.attributes %>%
@@ -306,7 +329,7 @@ write_csv(heidegger.top.members, "heidegger_communities.csv")
 ggsave(plot = heidegger.net$hive, "heidegger_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
 # Merleauponty sub-community
-merleauponty.net <- get.sub.net(net.directed, "MERLEAUPONTY M")
+merleauponty.net <- get.sub.net(net.directed, "MERLEAUPONTY M", threshold = 20)
 merleauponty.net$visualization # Network plot object
 merleauponty.net$hive # Hive plot object
 merleauponty.top.members <- merleauponty.net$nodes.attributes %>%
@@ -318,15 +341,16 @@ write_csv(merleauponty.top.members, "merleauponty_communities.csv")
 ggsave(plot = merleauponty.net$hive, "merleauponty.net_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
 
-marx.net <- get.sub.net(net.directed, "MARX K")
+marx.net <- get.sub.net(net.directed, "MARX K", threshold = 20)
 marx.net$visualization
 
 
-sartre.net <- get.sub.net(net.directed, "SARTRE J")
+sartre.net <- get.sub.net(net.directed, "SARTRE J", threshold = 20)
 sartre.net$visualization
 
-dreyfus.net <- get.sub.net(net.directed, "DREYFUS H")
+dreyfus.net <- get.sub.net(net.directed, "DREYFUS H", threshold = 20)
 dreyfus.net$visualization
 
-searle.net <- get.sub.net(net.directed, "SEARLE J", 15) # Don't understand why this one doesn't show labels.
+searle.net <- get.sub.net(net.directed, "SEARLE J", threshold = 20) # Don't understand why this one doesn't show labels.
 searle.net$visualization
+searle.net$hive
