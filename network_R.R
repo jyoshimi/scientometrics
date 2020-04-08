@@ -10,16 +10,14 @@ library(pals)
 
 # Preliminary ------
 
-
 # Meaningful structure from fastgreedy.community, louvain, walktrap, and spinglass
 # All others return few commnities or take a long time to run
 detect.community <- igraph::cluster_louvain
 
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list.csv
-edge.list <- read_csv('small_edge_list.csv') %>%
+edge.list <- read_csv('complete_edge_list.csv') %>%
   rename(weight = Weight)
-
 
 # Create network ------
 
@@ -118,7 +116,6 @@ net.directed <- igraph::set.edge.attribute(graph = net.directed, name = "weight"
                                              value = layout.weights)
 # SAVE THE GRAPH in GRAPHML format.
 # This format can be read by GEPHI.
-
 net.directed %>% 
   write_graph(file = "gephi_test.graphml", format = "graphml")
 
@@ -146,17 +143,12 @@ net.viz
 # Uncomment line to save network viz as a pdf.  Can play with resolution and size. *
 ggsave(plot = net.viz, "citation_network.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
-# Uncomment to save for Gephi
-# TODO: Pablo have a look?
-# gephi = igraph.to.gexf(net.directed, position = net.layout)
-
 #
 # Hive stuff------
 #
 
 # This hacky function generates a field for each edge that's 0 if it's a within-community edge. 
 # Useful (I think??) for the hive plot. Probably a better way of doing this.
-# TODO Move this below?
 opposite.weights <- function(community, network, weight.within = 0, weight.between = 1) {
   bridges <- crossing(communities = community, graph = network)
   weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
@@ -209,8 +201,6 @@ ggsave(plot = hive.plot, "hive_plot.pdf", height = 14, width = 14, units = "in",
 
 
 # Visualizing sub networks ------
-
-# TODO: Fix for undirected case
 
 # Function to extract sub network info
 get.sub.net <- function(net, author, threshold = 10){
