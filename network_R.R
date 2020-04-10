@@ -242,7 +242,12 @@ get.sub.net <- function(net, author, threshold = 10){
   author.nodes <- tidy.author.net %>%
     tidygraph::activate(nodes) %>%
     as_tibble()
-
+  author.com.stats <- author.nodes %>% 
+    group_by(community) %>% 
+    summarize(sum.degree = sum(degree), 
+              mean.degree = mean(degree), 
+              sum.strength = sum(strength),
+              mean.strength = mean(strength))
   tidy.author.net <- tidy.author.net %>%
     tidygraph::activate(nodes) %>%
     mutate(community = factor(community),
@@ -288,6 +293,7 @@ get.sub.net <- function(net, author, threshold = 10){
 
   return(list(igraph.network = author.net.directed,
               nodes.attributes = author.nodes,
+              stats = com.stats,
               visualization = author.viz,
               hive = author.hive))
 }
@@ -296,6 +302,7 @@ get.sub.net <- function(net, author, threshold = 10){
 
 # Husserl sub-community
 husserl.net <- get.sub.net(net.directed, "HUSSERL E", threshold = 20)
+husserl.net$stats
 husserl.net$visualization # Network plot object
 husserl.net$hive # Hive plot object
 husserl.top.members <- husserl.net$nodes.attributes %>%
