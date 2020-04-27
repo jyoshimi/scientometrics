@@ -37,8 +37,28 @@ parsed.articles <- metaTagExtraction(M = raw.articles, Field = "CR_AU")
 citing.matrix.raw <- cocMatrix(parsed.articles, Field = "CR_AU", type = "matrix", sep = ";") %>% 
   as_tibble()
 
-# For inspection
+# Useful code snippets (focused only on citing authors)  ------
 # write(sort(unique(colnames(citing.matrix.raw))), file = "~/Desktop/citedAuthors.txt")
+
+# See number of articles grabbed from each journal
+# raw.articles %>%  group_by(SO) %>% tally() %>% View()
+
+# Make sure we aren't getting Zahavi because of JCS. Can plug in gallagher too.
+# parsed.articles %>% 
+#   filter(SO == "PHENOMENOLOGY AND THE COGNITIVE SCIENCES" & str_detect(CR_AU, "ZAHAVI")) %>% 
+#   nrow()
+
+# See how often "phenomenology of spirit" is what was found
+# Results: Total: 189, Abstracts (AB): 113, Title (TI): 97,  Keywords (DE): 21
+# Note that there are 297 citing authors in the "Hegel cluster"
+# PS = "PHENOMENOLOGY OF SPIRIT|PHENOMENOLOGY OF MIND|DES GEISTES"
+# hegel.folks <- parsed.articles %>%
+#   filter(str_detect(AB, PS) | str_detect(TI, PS) | str_detect(DE, PS)) 
+#   # .$AU %>%  unique()
+# nrow(hegel.folks)
+# View(hegel.folks) # Peruse titles and references. Suggests this really is a mainly Hegel discussion
+
+# Wrangle the data -----
 
 # Parse out the original authors (AU) and save only the first author in multi-authored pieces
 first.author <- map_chr(strsplit(parsed.articles$AU, ';'), function(x){return(x[1])})
@@ -62,7 +82,6 @@ citing.matrix.clean <- citing.matrix.raw %>%
   # Removing columns with numbers
   select(-matches("[[:digit:]]"))
 
-# For inspection
 # write(unlist(unique(citing.matrix.clean[,"first.author"]),use.names = FALSE), 
 #       file = "~/Desktop/mainAuthors.txt")
 # write(sort(unique(colnames(citing.matrix.clean))), file = "~/Desktop/citedAuthors.txt")
@@ -83,6 +102,7 @@ shorten.name <- function(x) {
   if (is.na(x)) {
     return(NA)
   }
+
   if (str_detect(x, "ARISTO[A-Z]+[[:space:]]*")) {
     return("ARISTOTLE")
   }

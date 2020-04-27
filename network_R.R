@@ -17,7 +17,8 @@ detect.community <- igraph::cluster_louvain
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list.csv
 edge.list <- read_csv('complete_edge_list.csv') %>%
-  rename(weight = Weight)
+  rename(weight = Weight) 
+# filter(Source == Target) # To remove self-citations
 
 # Create network ------
 
@@ -35,8 +36,6 @@ net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
 # * Must change depending on which detection alg is used
 net.communities <- detect.community(net.undirected)
 
-
-
 # Add indegree, WEIGHTED in-degree (a.k.a. strength) and 
 # community as vertex attributes to the igraph network.
 # Used  for plotting.
@@ -47,6 +46,8 @@ net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "stren
                                              value = strength(net.directed, mode = "in", loops = FALSE))
 net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "community",
                                              value = igraph::membership(net.communities))
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "outdegree",
+                                             value = degree(net.directed, mode = "out"))
 
 
 # Explore membership ------
@@ -61,23 +62,33 @@ nodes <- tidynet %>%
   tidygraph::activate(nodes) %>%
   as_tibble()
 
-# Get top by indegree
+# Some Code snippets and Stats ------
+
+# Get top N authors by indegree (no communities)
 tops <- nodes %>% 
-  top_n(50,degree) %>% 
+  top_n(10,degree) %>% 
+  mutate(name = str_to_title(name)) %>% 
   arrange(desc(degree))
 write_csv(tops,"tops.csv")
 
-# Uncomment to save list of 5 top in-degree authors in each cluster
+# Uncomment to save list of top in-degree authors in each cluster
 top.members <- nodes %>%
   group_by(community) %>%
-  top_n(5, degree) %>%
+  top_n(20, degree) %>%
   arrange(community, desc(degree)) %>%
-  select(name, degree, community)
+  # select(name, degree, community) %>% 
+  mutate(name = str_to_title(name))
 write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
+
+# Complete list of all authors, ordered bycommunity memberships
+all.members <- nodes %>%
+  arrange(community, desc(strength)) %>%
+  # select(name, strength, community)  %>% 
+  mutate(name = str_to_title(name))
+write_csv(all.members, "all_authors_by_community.csv") # uncomment this line to save result to csv
 
 # Get community degree stats: sum in-degree, mean-indegree, mean eigen
 # Especially useful for Gephi
-
 com.stats <- nodes %>% 
   group_by(community) %>% 
   summarize(sum.degree = sum(degree), 
@@ -85,6 +96,34 @@ com.stats <- nodes %>%
             sum.strength = sum(strength),
             mean.strength = mean(strength))
 write_csv(com.stats, "community_stats.csv") # uncomment this line to save result to csv
+
+# Num authors overall:
+# nrow(nodes)
+# Number who self-cite
+# edge.list %>% filter(Source == Target) %>% nrow 
+
+
+# Get citing authors
+all.citing <- nodes %>%
+  filter(outdegree > 0) %>%
+  group_by(community) %>%
+  tally()
+
+  top_n(20, outdegree)  %>%
+  arrange(community, desc(outdegree)) %>%
+  # select(name, strength, community)  %>%
+  mutate(name = str_to_title(name))
+nrow(all.citing)
+all.citing %>% group_by(community) %>% tally()
+View(all.citing)
+
+# Get exclusively cited authors
+# all.cited <- nodes %>%
+#   arrange(community, desc(strength)) %>%
+#   # select(name, strength, community)  %>%
+#   mutate(name = str_to_title(name)) %>%
+#   filter(outdegree == 0)
+# nrow(all.cited)
 
 # Visualizing the network ------
 
@@ -203,7 +242,7 @@ ggsave(plot = hive.plot, "hive_plot.pdf", height = 14, width = 14, units = "in",
 # Visualizing sub networks ------
 
 # Function to extract sub network info
-get.sub.net <- function(net, author, threshold = 10){
+get.sub.net <- function(net, author, label_threshold = 10){
   # Function for recursively analyzing a subnet of a network. The procedure is
   # based on the name of an author. It uses the community structure of the input
   # net to detect a community structure within that sub network using the same
@@ -212,7 +251,7 @@ get.sub.net <- function(net, author, threshold = 10){
   # Input:    `net` is a directed igraph object with added vertex attributes for community.
   #           `author` is a string with the name of the target author in
   #             the form LASTNAME INITIAL e.g. `HUSSERL E`
-  #           `threshold` is the threshold of in-degree value at which labels are
+  #           `label_threshold` is the threshold of in-degree value at which labels are
   #           plotted for the authors. default is 10.
   # Returns:  A list.
   #           $igraph.network is a the directed igraph representation of the sub-network,
@@ -251,7 +290,7 @@ get.sub.net <- function(net, author, threshold = 10){
   tidy.author.net <- tidy.author.net %>%
     tidygraph::activate(nodes) %>%
     mutate(community = factor(community),
-           display.name = ifelse(degree > threshold, name, NA))
+           display.name = ifelse(degree > label_threshold, name, NA))
   tidy.author.net <- tidy.author.net %>%
     activate(edges) %>%
     mutate(inverse.weight = (E(author.net.directed)$weight * opposite.weights(author.clusters, author.net.directed)) ^ 2)
@@ -268,7 +307,7 @@ get.sub.net <- function(net, author, threshold = 10){
 
   small.tidy.author <- tidy.author.net %>%
     activate(nodes) %>%
-    mutate(display.name = ifelse(degree > threshold, name, NA)) %>%
+    mutate(display.name = ifelse(degree > label_threshold, name, NA)) %>%
     filter(degree > 5) %>%
     mutate(community = factor(as.numeric(community), labels = c(1:length(unique(community))), exclude = TRUE)) %>%
     activate(edges) %>%
@@ -300,54 +339,83 @@ get.sub.net <- function(net, author, threshold = 10){
 
 # Manually use the get.sub.net function for communities of interest
 
-# Husserl sub-community
-husserl.net <- get.sub.net(net.directed, "HUSSERL E", threshold = 20)
-husserl.net$stats
-husserl.net$visualization # Network plot object
-husserl.net$hive # Hive plot object
+# Husserl sub-community------
+husserl.net <- get.sub.net(net.directed, "HUSSERL E", label_threshold = 20)
+
+# Graphs
+# husserl.net$hive # Hive plot object
+# husserl.net$visualization # Network plot object
+# ggsave(plot = husserl.net$hive, "husserl_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+
+# Top members
 husserl.top.members <- husserl.net$nodes.attributes %>%
   group_by(community) %>%
-  top_n(5, degree) %>%
+  # top_n(20, degree) %>%      # Comment out to see everyone
   arrange(community, desc(degree)) %>%
-  select(name, degree, community)
+  mutate(name = str_to_title(name)) 
+  # select(name, degree, community)
 write_csv(husserl.top.members, "husserl_communities.csv")
-ggsave(plot = husserl.net$hive, "husserl_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+# Number of exclusively cited authors:sum(husserl.top.members$outdegree == 0)  
+# Number of citing authors: sum(husserl.top.members$outdegree > 0)  
+# Number of authors in "Husserl Cluster" who don't cite Husserl: 111
+#  sum(husserl.top.members$outdegree > 0) - husserl.top.members$degree[1]
 
-# Heidegger sub-community
-heidegger.net <- get.sub.net(net.directed, "HEIDEGGER M", threshold = 20)
+# Stats
+# husserl.net$stats
+# write_csv(husserl.net$stats, "husserl_stats.csv") # uncomment this line to save result to csv
+
+
+# Heidegger sub-community------
+heidegger.net <- get.sub.net(net.directed, "HEIDEGGER M", label_threshold = 20)
 heidegger.net$visualization # Network plot object
 heidegger.net$hive # Hive plot object
 heidegger.top.members <- heidegger.net$nodes.attributes %>%
   group_by(community) %>%
-  top_n(5, degree) %>%
+  top_n(20, degree) %>%
   arrange(community, desc(degree)) %>%
   select(name, degree, community)
 write_csv(heidegger.top.members, "heidegger_communities.csv")
-ggsave(plot = heidegger.net$hive, "heidegger_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+# ggsave(plot = heidegger.net$hive, "heidegger_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+heidegger.net.stats <- heidegger.net$nodes %>% 
+  group_by(community) %>% 
+  summarize(sum.degree = sum(degree), 
+            mean.degree = round(mean(degree), digits = 3), 
+            sum.strength = sum(strength),
+            mean.strength = round(mean(strength), digits=3)) %>% 
+  arrange(desc(sum.degree))
+write_csv(heidegger.net.stats, "heidegger_stats.csv") # uncomment this line to save result to csv
 
-# Merleauponty sub-community
-merleauponty.net <- get.sub.net(net.directed, "MERLEAUPONTY M", threshold = 20)
+# Merleauponty sub-community------
+merleauponty.net <- get.sub.net(net.directed, "MERLEAUPONTY M", label_threshold = 20)
 merleauponty.net$visualization # Network plot object
 merleauponty.net$hive # Hive plot object
 merleauponty.top.members <- merleauponty.net$nodes.attributes %>%
   group_by(community) %>%
-  top_n(5, degree) %>%
+  top_n(20, degree) %>%
   arrange(community, desc(degree)) %>%
   select(name, degree, community)
-write_csv(merleauponty.top.members, "merleauponty_communities.csv")
-ggsave(plot = merleauponty.net$hive, "merleauponty.net_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+write_csv(merleauponty.top.members, "mp_communities.csv")
+# ggsave(plot = merleauponty.net$hive, "merleauponty.net_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
+merleauponty.net.stats <- merleauponty.net$nodes %>% 
+  group_by(community) %>% 
+  summarize(sum.degree = sum(degree), 
+            mean.degree = round(mean(degree), digits = 3), 
+            sum.strength = sum(strength),
+            mean.strength = round(mean(strength), digits=3)) %>% 
+  arrange(desc(sum.degree))
+write_csv(merleauponty.net.stats, "mp_stats.csv") # uncomment this line to save result to csv
 
 
-marx.net <- get.sub.net(net.directed, "MARX K", threshold = 20)
+# Mark and others------
+marx.net <- get.sub.net(net.directed, "MARX K", label_threshold =  20)
 marx.net$visualization
 
-
-sartre.net <- get.sub.net(net.directed, "SARTRE J", threshold = 20)
+sartre.net <- get.sub.net(net.directed, "SARTRE J", label_threshold = 20)
 sartre.net$visualization
 
-dreyfus.net <- get.sub.net(net.directed, "DREYFUS H", threshold = 20)
+dreyfus.net <- get.sub.net(net.directed, "DREYFUS H", label_threshold = 20)
 dreyfus.net$visualization
 
-searle.net <- get.sub.net(net.directed, "SEARLE J", threshold = 20) # Don't understand why this one doesn't show labels.
+searle.net <- get.sub.net(net.directed, "SEARLE J", label_threshold = 20) # Don't understand why this one doesn't show labels.
 searle.net$visualization
 searle.net$hive
