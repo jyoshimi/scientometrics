@@ -17,8 +17,8 @@ detect.community <- igraph::cluster_louvain
 # Change this to where the files are stored.
 # Choices here are small_edge_list.csv and complete_edge_list.csv
 edge.list <- read_csv('complete_edge_list.csv') %>%
-  rename(weight = Weight) 
-# filter(Source == Target) # To remove self-citations
+  rename(weight = Weight) %>% 
+  filter(Source != Target) # To remove self-citations
 
 # Create network ------
 
@@ -49,7 +49,6 @@ net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "commu
 net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "outdegree",
                                              value = degree(net.directed, mode = "out"))
 
-
 # Explore membership ------
 
 # Import as tidynet, which represents graph as a dataframe and it's simpler to visualize it
@@ -74,7 +73,7 @@ write_csv(tops,"tops.csv")
 # Uncomment to save list of top in-degree authors in each cluster
 top.members <- nodes %>%
   group_by(community) %>%
-  top_n(20, degree) %>%
+  top_n(10, degree) %>%
   arrange(community, desc(degree)) %>%
   # select(name, degree, community) %>% 
   mutate(name = str_to_title(name))
@@ -107,8 +106,6 @@ write_csv(com.stats, "community_stats.csv") # uncomment this line to save result
 all.citing <- nodes %>%
   filter(outdegree > 0) %>%
   group_by(community) %>%
-  tally()
-
   top_n(20, outdegree)  %>%
   arrange(community, desc(outdegree)) %>%
   # select(name, strength, community)  %>%
@@ -140,19 +137,34 @@ tidynet <- tidynet %>%
 # Exaggerate community structure (not used for all)
 # Rescale within and between community weights 
 # Inspired by https://stackoverflow.com/questions/16390221/how-to-make-grouped-layout-in-igraph
+# NOTE: I DIDNT USE THIS FOR THE FORCE ATLAS 2 LAYOUT
+
 edge.weights <- function(community, network, weight.within = 1.5, weight.between = 1) {
   bridges <- crossing(communities = community, graph = network)
   weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
   return(weights)
 }
 # change below to directed or undirected *
-group.edges <- edge.weights(net.communities, net.directed) 
+group.edges <- edge.weights(net.communities, net.directed)
 
 # Set weighted edges in igraph object for exporting
 
 layout.weights <- igraph::edge.attributes(net.directed)[[1]] * group.edges
 net.directed <- igraph::set.edge.attribute(graph = net.directed, name = "weight",
                                              value = layout.weights)
+# Create display labels for gephi
+
+top.labels <- igraph::vertex.attributes(net.directed)[[1]] %>% 
+  map_chr(function(name){
+    name <- stringr::str_to_title(name)
+    if(name %in% top.members$name){
+      return(name)
+      } else {return("")}
+  })
+net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "display_label",
+                                             value = top.labels)
+
+
 # SAVE THE GRAPH in GRAPHML format.
 # This format can be read by GEPHI.
 net.directed %>% 
@@ -179,7 +191,7 @@ net.viz <- ggraph(tidynet, layout = net.layout) +
 # Quick view
 net.viz
 
-# Uncomment line to save network viz as a pdf.  Can play with resolution and size. *
+ # Uncomment line to save network viz as a pdf.  Can play with resolution and size. *
 ggsave(plot = net.viz, "citation_network.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
 #
@@ -343,8 +355,8 @@ get.sub.net <- function(net, author, label_threshold = 10){
 husserl.net <- get.sub.net(net.directed, "HUSSERL E", label_threshold = 20)
 
 # Graphs
-# husserl.net$hive # Hive plot object
-# husserl.net$visualization # Network plot object
+husserl.net$hive # Hive plot object
+husserl.net$visualization # Network plot object
 # ggsave(plot = husserl.net$hive, "husserl_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
 
 # Top members

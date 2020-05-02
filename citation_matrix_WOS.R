@@ -61,6 +61,7 @@ citing.matrix.raw <- cocMatrix(parsed.articles, Field = "CR_AU", type = "matrix"
 # Wrangle the data -----
 
 # Parse out the original authors (AU) and save only the first author in multi-authored pieces
+
 first.author <- map_chr(strsplit(parsed.articles$AU, ';'), function(x){return(x[1])})
 
 # Add first author as first column
@@ -68,19 +69,49 @@ citing.matrix.raw <- citing.matrix.raw %>%
   mutate(first.author) %>%    
   select(first.author, everything())    # Re-order so first.author is first column
 
+all.names <- c(colnames(citing.matrix.raw), citing.matrix.raw$first.author) %>% 
+  unique() %>% 
+  enframe() %>% 
+  mutate(short.name = shorten.name(value)) %>% 
+  rename(old.name = value) %>% 
+  select(-name) %>% 
+  arrange(old.name) %>% 
+  filter(str_detect(old.name, "[[:digit:]]", negate = TRUE))
+write_csv(all.names, "current_names.csv")
+
+# first.authors.new <- map_chr(citing.matrix.raw$first.author, function(name){
+#   if(name %in% modified.authors$old.name){
+#     name.ind <- which(modified.authors$old.name == name)
+#     return(modified.authors$new.name[name.ind])
+#   }else{
+#     return(shorten.name(name))}
+# })
+# 
+# citing.matrix.raw$first.author <- first.authors.new 
+# 
+# citing.matrix.raw <- citing.matrix.raw %>% 
+#   group_by(first.author) %>% 
+#   summarize_all(sum)
+
 # Data cleanup
 citing.matrix.clean <- citing.matrix.raw %>% 
   # Alphabetize by first.author
   arrange(first.author) %>%   
   # Filter out rows
-  filter(first.author != "NA", !str_detect(first.author,"ANONYMOUS")) %>%
-  # Remove NA and Anonymous columns
-  select(-ANONYMOUS, -`NA`) %>%                           
-  # Remove specific columns
-  select(-`A CORRECTION`, -`A LUDW U FREIB HA`, -`AA VV`, -`AA XV`) %>% 
-  select(-`HUA ZHENGREN`, -`HUA DOK`) %>% # Remove confounds for Husserliana volumes. These authors have only 1 citation, so they'll get deleted anyway.
+  filter(first.author != "NA", !str_detect(first.author,"ANONYMOUS"), !(is.na(first.author))) %>% 
   # Removing columns with numbers
   select(-matches("[[:digit:]]"))
+
+# 
+# 
+# %>%
+#   # Remove NA and Anonymous columns
+#   select(-ANONYMOUS, -`NA`) %>%                           
+#   # Remove specific columns
+#   select(-`A CORRECTION`, -`A LUDW U FREIB HA`, -`AA VV`, -`AA XV`, -`AAVV`) %>% 
+#   select(-`HUA ZHENGREN`, -`HUA DOK`) %>% # Remove confounds for Husserliana volumes. These authors have only 1 citation, so they'll get deleted anyway.
+#   # Removing columns with numbers
+  
 
 # write(unlist(unique(citing.matrix.clean[,"first.author"]),use.names = FALSE), 
 #       file = "~/Desktop/mainAuthors.txt")
@@ -92,6 +123,13 @@ citing.matrix.clean <- citing.matrix.raw %>%
 # name and first initial TODO: DE P, DA SILVA, AL names TODO: Consider authors
 # cited only by last name. e.g. HEIDEGGER, ADORNO, etc. Should be turned into
 # complete name by hand?
+
+
+# reference.names <- read_csv('../scientometrics/temp_fixed_authors.csv', col_names = c("AU", "new.name"))
+
+modified.authors <- read_csv(file = "name_changes.csv") %>% 
+  select(old.name = `OLD NAME`, new.name = `NEW NAME ("NA" to Delete)`)
+
 shorten.name <- function(x) {
   # Input:
   #       `x` is a string with a full name of an author, ideally in the form LASTNAME FIRSTNAME
@@ -102,37 +140,50 @@ shorten.name <- function(x) {
   if (is.na(x)) {
     return(NA)
   }
-
-  if (str_detect(x, "ARISTO[A-Z]+[[:space:]]*")) {
-    return("ARISTOTLE")
+  if(x == "NA"){return(NA)}
+  if(x %in% modified.authors$old.name){
+    name.ind <- which(modified.authors$old.name == x)
+    print(x)
+    print(modified.authors$new.name[name.ind])
+    return(modified.authors$new.name[name.ind])
   }
-  # Now: HUSSERL and HUSSERLIANA
-  else if (str_detect(x, "HUSSER[A-Z]")) {
-    # Detects almost all instances of Husserl appearing
-    return("HUSSERL E")
-  } else if (str_detect(x, "^HUA$")) {
-    return("HUSSERL E")
-  } else if (str_detect(x, "^HUA[[:space:]]")) {
-    return("HUSSERL E")
-  } else if (str_detect(x,"HUSERL")) {
-    return ("HUSSERL E")
-  }
-  
-  if (str_detect(x, "^MERLEAU.*")) {
-    return ("MERLEAUPONTY M")
-  }
-  
-  # NOW: NAMES WITH SPACES
-  if (str_detect(x, "^VAN DER|^VAN DEN|^VON DER")) {
-    return(
-      str_extract(
-        x,
-        "^[A-Z]+[[:space:]][A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}"
-      )
-    )
-  } else if (str_detect(x, "^VAN |^VON ")) {
-    return(str_extract(x, "^[A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}"))
-  } else{
+  # if(x %in% reference.names$AU){
+  #   reference.ind <- which(reference.names$AU == x)
+  #   # print(paste("Before:", x))
+  #   # print(paste("After:", reference.names$new.name[reference.ind]))
+  #   return(reference.names$new.name[reference.ind])
+  # }
+  # if (str_detect(x, "ARISTO[A-Z]+[[:space:]]*")) {
+  #   return("ARISTOTLE")
+  # }
+  # # Now: HUSSERL and HUSSERLIANA
+  # else if (str_detect(x, "HUSSER[A-Z]")) {
+  #   # Detects almost all instances of Husserl appearing
+  #   return("HUSSERL E")
+  # } else if (str_detect(x, "^HUA$")) {
+  #   return("HUSSERL E")
+  # } else if (str_detect(x, "^HUA[[:space:]]")) {
+  #   return("HUSSERL E")
+  # } else if (str_detect(x,"HUSERL")) {
+  #   return ("HUSSERL E")
+  # }
+  # 
+  # if (str_detect(x, "^MERLEAU.*")) {
+  #   return ("MERLEAUPONTY M")
+  # }
+  # 
+  # # NOW: NAMES WITH SPACES
+  # if (str_detect(x, "^VAN DER|^VAN DEN|^VON DER")) {
+  #   return(
+  #     str_extract(
+  #       x,
+  #       "^[A-Z]+[[:space:]][A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}"
+  #     )
+  #   )
+  # } else if (str_detect(x, "^VAN |^VON ")) {
+  #   return(str_extract(x, "^[A-Z]+[[:space:]][A-Z]+[[:space:]]*[[A-Z]]{1}"))
+  # } 
+else{
     # The main algorithm applied to everyone. Special cases above
     # Extracts the longest string followed by a space and then the
     # first letter of the next string
@@ -144,10 +195,16 @@ shorten.name <- function(x) {
 short.cited <- colnames(citing.matrix.clean)[-1] %>%  # Don't use the first column name, which is "first.author"
   map_chr(shorten.name) # Returns a vector of strings with the shortened names in the columns
 
+short.cited <- short.cited[!(is.na(short.cited))]
+
 # Shorten citing authors too so we can align authors and citing authors
 short.citing <- map_chr(citing.matrix.clean$first.author, shorten.name)
 citing.matrix.clean <- citing.matrix.clean %>% 
   mutate(first.author = short.citing)
+
+citing.matrix.clean <- citing.matrix.clean %>% 
+  filter(!(is.na(first.author)),
+         first.author != "NA") 
 
 # For inspection
 # write(sort(unique(short.names)), file = "~/Desktop/shortnames.txt")
@@ -173,18 +230,23 @@ temp.citing.matrix <- citing.matrix.clean[,-1] %>%
   as.matrix()
 row.names(temp.citing.matrix) <- citing.matrix.clean$first.author
 
+
+
 # Now consolidate the COLUMNS of the citing matrix
 # Manully does for columns what the row consolidation above does for row
 for(name in sort(colnames(citing.matrix.clean)[-1])){
   # Loop through the names of the cited authors sorted alphabetically
   # Get short version of name
   short.name <- shorten.name(name)
+  print(short.name)
   # Sum old column with short name in new matrix. 
   # this ends up summing multiple versions of the same 
   # author in the same column on the new matrix 
   # (v.gr. "ADORNO", "ADORNO T" "ADORNO TW" "ADORNO T W" etc)
-  new.vector <- new.citing.matrix[, short.name] + temp.citing.matrix[, name]
-  new.citing.matrix[, short.name] <- new.vector
+  if(!(is.na(short.name))){
+    new.vector <- new.citing.matrix[, short.name] + temp.citing.matrix[, name]
+    new.citing.matrix[, short.name] <- new.vector
+    }
 }
 
 # For inspection (Is ths right thing to look at?)
@@ -205,7 +267,7 @@ for(name in sort(colnames(citing.matrix.clean)[-1])){
 # Cleanup: Remove any cited author with less than 1 
 # citation (that is, only 1 citing author cited them only 1 time)
 new.citing.matrix <- new.citing.matrix[, colSums(new.citing.matrix) > 1]
-
+new.citing.matrix <- new.citing.matrix[,sort(colnames(new.citing.matrix))]
 
 # Create small matrix ------
 
