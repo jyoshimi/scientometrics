@@ -1,0 +1,869 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="weight" attr.type="double" for="edge" id="d0" />
+  <graph edgedefault="directed">
+    <node id="ALVIN J" />
+    <node id="BRUZINA R" />
+    <node id="BADGER L" />
+    <node id="BANHAM G" />
+    <node id="BEHNKE E" />
+    <node id="BERTOLINI S" />
+    <node id="DASTUR F" />
+    <node id="DEPRAZ N" />
+    <node id="DUPONT C" />
+    <node id="GIUBIATO G" />
+    <node id="GIUBILATO G" />
+    <node id="GRONDIN J" />
+    <node id="GRONDIN V" />
+    <node id="HART J" />
+    <node id="HENRY M" />
+    <node id="HIMANKA J" />
+    <node id="HOBBS D" />
+    <node id="HOMAN C" />
+    <node id="IKEDA Y" />
+    <node id="INVERSO H" />
+    <node id="LEE E" />
+    <node id="LORELLE P" />
+    <node id="MASI F" />
+    <node id="MORAN D" />
+    <node id="NIEL L" />
+    <node id="ONATE A" />
+    <node id="PLOTKA W" />
+    <node id="ROGGERO J" />
+    <node id="SAKAKIBARA T" />
+    <node id="SHESTOVA E" />
+    <node id="SMYTH B" />
+    <node id="TERZI P" />
+    <node id="VECINO M" />
+    <node id="WEBER J" />
+    <node id="BARBER M" />
+    <node id="CAIRNS D" />
+    <node id="BEGOUT B" />
+    <node id="BERNASCONI R" />
+    <node id="BESOLI S" />
+    <node id="BOJANIC P" />
+    <node id="BRIEDIS M" />
+    <node id="BRISART R" />
+    <node id="BRUDZINSKA J" />
+    <node id="CHERNAVIN G" />
+    <node id="CORA G" />
+    <node id="DE P" />
+    <node id="DONOHOE J" />
+    <node id="DOYON M" />
+    <node id="DWYER D" />
+    <node id="EDIE J" />
+    <node id="EMBREE L" />
+    <node id="FALCON L" />
+    <node id="FLYNN T" />
+    <node id="GONNELLA S" />
+    <node id="GROS A" />
+    <node id="HAUSER K" />
+    <node id="HOLMES R" />
+    <node id="HOPKINS B" />
+    <node id="HUGHES D" />
+    <node id="HUSSERL E" />
+    <node id="IJSSELING S" />
+    <node id="JARAN F" />
+    <node id="KRISTJANSSON K" />
+    <node id="KWAN T" />
+    <node id="LEASK I" />
+    <node id="LEE N" />
+    <node id="LOZAR J" />
+    <node id="MICHEL B" />
+    <node id="MOONEY T" />
+    <node id="NEMETH T" />
+    <node id="NI L" />
+    <node id="PINTOS P" />
+    <node id="RABANAQUE L" />
+    <node id="ROPERO N" />
+    <node id="SEPP H" />
+    <node id="SOBERANO R" />
+    <node id="SOKOLOWSKI R" />
+    <node id="THEODOROU P" />
+    <node id="TRAKAKIS N" />
+    <node id="ZIPPEL N" />
+    <node id="CROWE B" />
+    <node id="CAPOBIANCO R" />
+    <node id="FIELD J" />
+    <node id="KENNEDY T" />
+    <node id="SHEEHAN T" />
+    <node id="ADRIAN J" />
+    <node id="DAHLSTROM D" />
+    <node id="ALTMAN M" />
+    <node id="ALTOBRANDO A" />
+    <node id="ANDERSEN N" />
+    <node id="AVERCHI M" />
+    <node id="BERTORELLO A" />
+    <node id="BROGAN M" />
+    <node id="BROWNLEE T" />
+    <node id="BURCH M" />
+    <node id="CALABRESSE C" />
+    <node id="DE L" />
+    <node id="ENGELLAND C" />
+    <node id="FAGENBLAT M" />
+    <node id="FERENCZ F" />
+    <node id="FERRER R" />
+    <node id="FEYAERTS J" />
+    <node id="FLAMARIQUE L" />
+    <node id="JACOBS H" />
+    <node id="KINKAID J" />
+    <node id="LANGBEHN C" />
+    <node id="LIBERATI N" />
+    <node id="MCMANUS D" />
+    <node id="O L" />
+    <node id="O R" />
+    <node id="OVERGAARD S" />
+    <node id="RADINKOVIC Z" />
+    <node id="SCHALOW F" />
+    <node id="SCULT A" />
+    <node id="SERON D" />
+    <node id="STUNKEL K" />
+    <node id="TANZER M" />
+    <node id="TRATTER A" />
+    <node id="WALSH P" />
+    <node id="WRATHALL M" />
+    <node id="ZOLLER D" />
+    <node id="AGGLETON S" />
+    <node id="FINK E" />
+    <node id="ALDEA A" />
+    <node id="ALLOA E" />
+    <node id="ARANDATORRES C" />
+    <node id="ARGUELLES F" />
+    <node id="ASCARATE L" />
+    <node id="BARKER J" />
+    <node id="BECKMANN Z" />
+    <node id="BJORK U" />
+    <node id="BLECHA I" />
+    <node id="BOROBIA J" />
+    <node id="BRENNAN E" />
+    <node id="CABRERA C" />
+    <node id="CAI W" />
+    <node id="CAMILLERI S" />
+    <node id="CAVALLARO M" />
+    <node id="CERBONE D" />
+    <node id="CHRISTENSEN J" />
+    <node id="CIBULKA J" />
+    <node id="COPILAS E" />
+    <node id="COSTELLOE T" />
+    <node id="CRISTIN R" />
+    <node id="CROWELL S" />
+    <node id="DAVIDSON S" />
+    <node id="DE N" />
+    <node id="DE W" />
+    <node id="DECLERCK G" />
+    <node id="DETISTOVA A" />
+    <node id="ELDRIDGE P" />
+    <node id="ELLISTON F" />
+    <node id="FORSTER W" />
+    <node id="GARCIA E" />
+    <node id="GARRIDO J" />
+    <node id="GHANOTAKIS G" />
+    <node id="GHITTI J" />
+    <node id="GIRARDI L" />
+    <node id="GRUNER S" />
+    <node id="GUERRERO J" />
+    <node id="GUILLEN G" />
+    <node id="HART K" />
+    <node id="HEINAMAA S" />
+    <node id="HOGENOVA A" />
+    <node id="JANER D" />
+    <node id="JOHNSON F" />
+    <node id="JONKUS D" />
+    <node id="KINGWELL M" />
+    <node id="KISIEL T" />
+    <node id="KOCHLER H" />
+    <node id="LAHBIB O" />
+    <node id="LAWLOR L" />
+    <node id="LELAND D" />
+    <node id="LIEBSCH B" />
+    <node id="LORIES D" />
+    <node id="LOSONCZ M" />
+    <node id="LOZANO A" />
+    <node id="LUFT S" />
+    <node id="MARBACH E" />
+    <edge source="ALVIN J" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="ALVIN J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BRUZINA R" target="BRUZINA R">
+      <data key="d0">5.0</data>
+    </edge>
+    <edge source="BRUZINA R" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BRUZINA R" target="FINK E">
+      <data key="d0">6.0</data>
+    </edge>
+    <edge source="BADGER L" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BADGER L" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BANHAM G" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BANHAM G" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BEHNKE E" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BEHNKE E" target="CAIRNS D">
+      <data key="d0">3.0</data>
+    </edge>
+    <edge source="BERTOLINI S" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BERTOLINI S" target="FINK E">
+      <data key="d0">3.0</data>
+    </edge>
+    <edge source="DASTUR F" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DASTUR F" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DASTUR F" target="FINK E">
+      <data key="d0">3.0</data>
+    </edge>
+    <edge source="DEPRAZ N" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="DEPRAZ N" target="FINK E">
+      <data key="d0">3.0</data>
+    </edge>
+    <edge source="DUPONT C" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DUPONT C" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GIUBIATO G" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GIUBIATO G" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GIUBIATO G" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GIUBILATO G" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="GIUBILATO G" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="GRONDIN J" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GRONDIN V" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GRONDIN V" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HART J" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HENRY M" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HENRY M" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HIMANKA J" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HIMANKA J" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HIMANKA J" target="FINK E">
+      <data key="d0">3.0</data>
+    </edge>
+    <edge source="HOBBS D" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HOBBS D" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HOMAN C" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HOMAN C" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HOMAN C" target="CAPOBIANCO R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HOMAN C" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HOMAN C" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="IKEDA Y" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="IKEDA Y" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="INVERSO H" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="INVERSO H" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="INVERSO H" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="LEE E" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LORELLE P" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="LORELLE P" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MASI F" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MORAN D" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MORAN D" target="CAIRNS D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="MORAN D" target="DAHLSTROM D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="NIEL L" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="NIEL L" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ONATE A" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="PLOTKA W" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="PLOTKA W" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ROGGERO J" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ROGGERO J" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SAKAKIBARA T" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SHESTOVA E" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SMYTH B" target="BRUZINA R">
+      <data key="d0">4.0</data>
+    </edge>
+    <edge source="SMYTH B" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="TERZI P" target="BRUZINA R">
+      <data key="d0">3.0</data>
+    </edge>
+    <edge source="VECINO M" target="BRUZINA R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="WEBER J" target="BRUZINA R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="BARBER M" target="CAIRNS D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="BARBER M" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BEGOUT B" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BERNASCONI R" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BESOLI S" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BESOLI S" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="BOJANIC P" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BRIEDIS M" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BRISART R" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BRUDZINSKA J" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CHERNAVIN G" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CHERNAVIN G" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CHERNAVIN G" target="FINK E">
+      <data key="d0">4.0</data>
+    </edge>
+    <edge source="CORA G" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CORA G" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="DE P" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DE P" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="DONOHOE J" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DOYON M" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DOYON M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DWYER D" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="EDIE J" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="EMBREE L" target="CAIRNS D">
+      <data key="d0">4.0</data>
+    </edge>
+    <edge source="FALCON L" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FALCON L" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FLYNN T" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GONNELLA S" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GONNELLA S" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GROS A" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GROS A" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HAUSER K" target="CAIRNS D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HOLMES R" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HOPKINS B" target="CAIRNS D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HOPKINS B" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HUGHES D" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HUSSERL E" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HUSSERL E" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="IJSSELING S" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="IJSSELING S" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="JARAN F" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KRISTJANSSON K" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KWAN T" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LEASK I" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LEASK I" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LEE N" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LOZAR J" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LOZAR J" target="CAPOBIANCO R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="LOZAR J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MICHEL B" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MOONEY T" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="NEMETH T" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="NI L" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="PINTOS P" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="RABANAQUE L" target="CAIRNS D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="ROPERO N" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SEPP H" target="CAIRNS D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="SOBERANO R" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SOKOLOWSKI R" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="THEODOROU P" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="TRAKAKIS N" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ZIPPEL N" target="CAIRNS D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CROWE B" target="CAPOBIANCO R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CROWE B" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FIELD J" target="CAPOBIANCO R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KENNEDY T" target="CAPOBIANCO R">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SHEEHAN T" target="CAPOBIANCO R">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="ADRIAN J" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ALTMAN M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ALTOBRANDO A" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ANDERSEN N" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="AVERCHI M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BERTORELLO A" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BROGAN M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BROWNLEE T" target="DAHLSTROM D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="BURCH M" target="DAHLSTROM D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="CALABRESSE C" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DE L" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ENGELLAND C" target="DAHLSTROM D">
+      <data key="d0">5.0</data>
+    </edge>
+    <edge source="FAGENBLAT M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FERENCZ F" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FERRER R" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FEYAERTS J" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FEYAERTS J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FLAMARIQUE L" target="DAHLSTROM D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="JACOBS H" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="JACOBS H" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KINKAID J" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LANGBEHN C" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LIBERATI N" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LIBERATI N" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MCMANUS D" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="O L" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="O R" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="OVERGAARD S" target="DAHLSTROM D">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="RADINKOVIC Z" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SCHALOW F" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SCULT A" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="SERON D" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="STUNKEL K" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="TANZER M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="TRATTER A" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="WALSH P" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="WRATHALL M" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ZOLLER D" target="DAHLSTROM D">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="AGGLETON S" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ALDEA A" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ALLOA E" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ARANDATORRES C" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ARGUELLES F" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ASCARATE L" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BARKER J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BECKMANN Z" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BJORK U" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BLECHA I" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="BOROBIA J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="BRENNAN E" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CABRERA C" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CAI W" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CAMILLERI S" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CAVALLARO M" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="CERBONE D" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="CHRISTENSEN J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CIBULKA J" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="COPILAS E" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="COSTELLOE T" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CRISTIN R" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="CROWELL S" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="DAVIDSON S" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DE N" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DE W" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DECLERCK G" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="DETISTOVA A" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ELDRIDGE P" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="ELLISTON F" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="FORSTER W" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GARCIA E" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GARRIDO J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GHANOTAKIS G" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GHITTI J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GIRARDI L" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GRUNER S" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="GUERRERO J" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="GUILLEN G" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HART K" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="HEINAMAA S" target="FINK E">
+      <data key="d0">2.0</data>
+    </edge>
+    <edge source="HOGENOVA A" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="JANER D" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="JOHNSON F" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="JONKUS D" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KINGWELL M" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KISIEL T" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="KOCHLER H" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LAHBIB O" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LAWLOR L" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LELAND D" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LIEBSCH B" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LORIES D" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LOSONCZ M" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LOZANO A" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="LUFT S" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+    <edge source="MARBACH E" target="FINK E">
+      <data key="d0">1.0</data>
+    </edge>
+  </graph>
+</graphml>

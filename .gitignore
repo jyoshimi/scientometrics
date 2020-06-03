@@ -1,2 +1,9 @@
-
 .DS_Store
+.ipynb_checkpoints
+.RData
+.Rhistory
+.Rapp.history
+.Rproj.user
+*.Rproj
+*.Rhistory
+~$temp_names.xlsx
