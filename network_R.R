@@ -11,7 +11,7 @@ library(pals)
 # Preliminary ------
 
 # Meaningful structure from fastgreedy.community, louvain, walktrap, and spinglass
-# All others return few commnities or take a long time to run
+# All others return few communities or take a long time to run
 detect.community <- igraph::cluster_louvain
 
 # Change this to where the files are stored.
@@ -30,7 +30,6 @@ net.undirected <- igraph::graph_from_data_frame(edge.list, directed = FALSE) %>%
 
 # Build a igraph network, which is a directed network built from the edge list
 net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
-
 
 # Run chosen community detection algorithm
 # * Must change depending on which detection alg is used
@@ -63,59 +62,58 @@ nodes <- tidynet %>%
   tidygraph::activate(nodes) %>%
   as_tibble()
 
-  # Some Code snippets and Stats ------
+# Code snippets and Stats ------
 
 # Get top N authors by indegree (no communities)
-tops <- nodes %>% 
-  top_n(10,degree) %>% 
-  mutate(name = str_to_title(name)) %>% 
-  arrange(desc(degree))
-write_csv(tops,"tops.csv")
+# tops <- nodes %>% 
+#   top_n(10,degree) %>% 
+#   mutate(name = str_to_title(name)) %>% 
+#   arrange(desc(degree))
+# write_csv(tops,"tops.csv")
 
-# Uncomment to save list of top in-degree authors in each cluster
-top.members <- nodes %>%
-  group_by(community) %>%
-  top_n(10, degree) %>%
-  arrange(community, desc(degree)) %>%
-  # select(name, degree, community) %>% 
-  mutate(name = str_to_title(name))
-write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
+# Top in-degree authors in each cluster
+# top.members <- nodes %>%
+#   group_by(community) %>%
+#   top_n(10, degree) %>%
+#   arrange(community, desc(degree)) %>%
+#   # select(name, degree, community) %>% 
+#   mutate(name = str_to_title(name))
+# write_csv(top.members, "top_authors_by_community.csv") # uncomment this line to save result to csv
 
 # Complete list of all authors, ordered bycommunity memberships
-all.members <- nodes %>%
-  arrange(community, desc(strength)) %>%
-  # select(name, strength, community)  %>% 
-  mutate(name = str_to_title(name))
-write_csv(all.members, "all_authors_by_community.csv") # uncomment this line to save result to csv
+# all.members <- nodes %>%
+#   arrange(community, desc(strength)) %>%
+#   # select(name, strength, community)  %>% 
+#   mutate(name = str_to_title(name))
+# write_csv(all.members, "all_authors_by_community.csv") # uncomment this line to save result to csv
 
 # Get community degree stats: sum in-degree, mean-indegree, mean eigen
 # Especially useful for Gephi
-com.stats <- nodes %>% 
-  group_by(community) %>% 
-  summarize(sum.degree = sum(degree), 
-            mean.degree = mean(degree), 
-            sum.strength = sum(strength),
-            mean.strength = mean(strength),
-            mean.eigen = median(scale(eigen)))
-write_csv(com.stats, "community_stats.csv") # uncomment this line to save result to csv
+# com.stats <- nodes %>% 
+#   group_by(community) %>% 
+#   summarize(sum.degree = sum(degree), 
+#             mean.degree = mean(degree), 
+#             sum.strength = sum(strength),
+#             mean.strength = mean(strength),
+#             mean.eigen = median(scale(eigen)))
+# write_csv(com.stats, "community_stats.csv") # uncomment this line to save result to csv
 
 # Num authors overall:
 # nrow(nodes)
 # Number who self-cite
 # edge.list %>% filter(Source == Target) %>% nrow 
 
-
 # Get citing authors
-all.citing <- nodes %>%
-  filter(outdegree > 0) %>%
-  group_by(community) %>%
-  top_n(20, outdegree)  %>%
-  arrange(community, desc(outdegree)) %>%
-  # select(name, strength, community)  %>%
-  mutate(name = str_to_title(name))
-nrow(all.citing)
-all.citing %>% group_by(community) %>% tally()
-View(all.citing)
+# all.citing <- nodes %>%
+#   filter(outdegree > 0) %>%
+#   group_by(community) %>%
+#   top_n(20, outdegree)  %>%
+#   arrange(community, desc(outdegree)) %>%
+#   # select(name, strength, community)  %>%
+#   mutate(name = str_to_title(name))
+# nrow(all.citing)
+# all.citing %>% group_by(community) %>% tally()
+# View(all.citing)
 
 # Get exclusively cited authors
 # all.cited <- nodes %>%
@@ -140,7 +138,7 @@ tidynet <- tidynet %>%
 # Exaggerate community structure (not used for all)
 # Rescale within and between community weights 
 # Inspired by https://stackoverflow.com/questions/16390221/how-to-make-grouped-layout-in-igraph
-# NOTE: I DIDNT USE THIS FOR THE FORCE ATLAS 2 LAYOUT
+# Note used for force-atlas 2
 
 edge.weights <- function(community, network, weight.within = 1.5, weight.between = 1) {
   bridges <- crossing(communities = community, graph = network)
@@ -151,12 +149,10 @@ edge.weights <- function(community, network, weight.within = 1.5, weight.between
 group.edges <- edge.weights(net.communities, net.directed)
 
 # Set weighted edges in igraph object for exporting
-
 layout.weights <- igraph::edge.attributes(net.directed)[[1]] * group.edges
 net.directed <- igraph::set.edge.attribute(graph = net.directed, name = "weight",
                                              value = layout.weights)
 # Create display labels for gephi
-
 top.labels <- igraph::vertex.attributes(net.directed)[[1]] %>% 
   map_chr(function(name){
     name <- stringr::str_to_title(name)
@@ -167,9 +163,7 @@ top.labels <- igraph::vertex.attributes(net.directed)[[1]] %>%
 net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "display_label",
                                              value = top.labels)
 
-
-# SAVE THE GRAPH in GRAPHML format.
-# This format can be read by GEPHI.
+# Save to graph.ml for use with GEPHI
 net.directed %>% 
   write_graph(file = "gephi_test.graphml", format = "graphml")
 
