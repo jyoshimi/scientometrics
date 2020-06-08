@@ -2,7 +2,7 @@ INSTRUCTIONS FOR GEPHI
 
 SETUP
 
-1. before opening gephi, download two plugins from gephi website:
+1. Before opening gephi, download two plugins from gephi website:
 	a. CIRCLE PACK https://gephi.org/plugins/#/plugin/circularlayout 
 	b. Groups by partition https://gephi.org/plugins/#/plugin/group-partition-gephi-plugin
 2. Open gephi and install plugins

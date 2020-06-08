@@ -1,16 +1,8 @@
 SETTING UP A PROJECT
 
-After cloning this directory we suggest you set up a project using RSTudio > New Project > Existing Directory
+After cloning this directory we suggest you set up a project using RSTudio > New Project > Existing Director
 
-
-GETTING THE DATA
-
-See citation_matrix_WOS.r.  Has lots of comments.
-
-Plans to do further cleanup in here. Pablo reccomends R for data science.
-	https://r4ds.had.co.nz/
-
-THE DATA
+DIRECTORY CONTENTS
 
 Edge lists
 	complete_edge_list.csv		the main data
@@ -20,6 +12,9 @@ Edge lists
 
 matrix, colnames, etc. are intermediate files.
 
+GETTING THE DATA
+
+For information how the code is downloaded and cleaned up, see the code comments in citation_matrix_WOS.r.  Also the discussion of getting the data from web of science.
 
 ANALZYING THE DATA
 
@@ -29,32 +24,30 @@ Efforts in python, ipynb, and gephi also included, but not used
 
 GETTING DATA FROM WEB OF SCIENCE
 
+http://apps.webofknowledge.com/WOS_GeneralSearch_input.do?product=WOS&search_mode=GeneralSearch&SID=6Ab49AoDqVSMbAU6NEu&preferencesSaved=
 
-	http://apps.webofknowledge.com/WOS_GeneralSearch_input.do?product=WOS&search_mode=GeneralSearch&SID=6Ab49AoDqVSMbAU6NEu&preferencesSaved=
+Search: 
+	Topic: "Phenomenology" 
+	Timespan: 1970-2017
+	More settings: only use core collection
 
-	Search: 
-		Topic: "Phenomenology" 
-		Timespan: 1970-2017
-		More settings: only use core collection
+Filter:  (Select -> Refine)
 
-	Filter:  (Select -> Refine)
+	Categories: Philosophy
+	Document Type: Article (Can later try: Book Review, Proceedings Paper, Editorial Material; Book chapter might not have citations)
 
-		Categories: Philosophy
-		Document Type: Article (Can later try: Book Review, Proceedings Paper, Editorial Material; Book chapter might not have citations)
+Summary: You searched for: TOPIC: (phenomenology) 
+	Refined by:
+	WEB OF SCIENCE CATEGORIES: ( PHILOSOPHY ) AND DOCUMENT TYPES: ( ARTICLE ) 
+	Timespan: 1970-2017. 
+	Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, BKCI-S, BKCI-SSH, ESCI.
 
-	Summary: You searched for: TOPIC: (phenomenology) 
-		Refined by:
-		WEB OF SCIENCE CATEGORIES: ( PHILOSOPHY ) AND DOCUMENT TYPES: ( ARTICLE ) 
-		Timespan: 1970-2017. 
-		Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, BKCI-S, BKCI-SSH, ESCI.
+Save:
 
-	Save:
-
-		Save to other file formats
-			500 at a time
-			Full record and Cited References
-			Format:plain text
-
+	Save to other file formats
+		500 at a time
+		Full record and Cited References
+		Format:plain text
 
 NOTES ON THE WOS SEARCH
 

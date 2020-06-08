@@ -35,6 +35,7 @@ clean.name <- function(x) {
   # Manual name changes.  
   if(x %in% modified.authors$old.name){
     name.ind <- which(modified.authors$old.name == x)
+    # print(x)s
     return(modified.authors$new.name[name.ind])
   }
   else{
@@ -238,3 +239,4 @@ small.edge.list <- gather(small.citing.matrix, "Target", "Weight", -first.author
 # These are the things we will use in the network analysis
 write_csv(complete.edge.list, "complete_edge_list.csv")
 write_csv(small.edge.list, "small_edge_list.csv")
+
