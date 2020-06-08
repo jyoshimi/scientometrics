@@ -1,6 +1,7 @@
 .DS_Store
 .ipynb_checkpoints
 .RData
+.RDataTmp
 .Rhistory
 .Rapp.history
 .Rproj.user

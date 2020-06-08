@@ -1,3 +1,8 @@
+SETTING UP A PROJECT
+
+After cloning this directory we suggest you set up a project using RSTudio > New Project > Existing Directory
+
+
 GETTING THE DATA
 
 See citation_matrix_WOS.r.  Has lots of comments.
