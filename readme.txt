@@ -69,7 +69,14 @@ Topic is based on 1) The Title of the article, review,  etc. 2) The Abstract 3) 
 	Search for "English" in this web page:
 	https://blog.scholasticahq.com/post/how-to-get-journal-indexed-web-of-science-core-collection/
 
+HOW NAME CHANGE DOCUMENT WAS PRODUCED
 
-
-
-
+all.names <- c(colnames(citing.matrix.raw), citing.matrix.raw$first.author) %>% 
+  unique() %>% 
+  enframe() %>% 
+  mutate(short.name = shorten.name(value)) %>% 
+  rename(old.name = value) %>% 
+  select(-name) %>% 
+  arrange(old.name) %>% 
+  filter(str_detect(old.name, "[[:digit:]]", negate = TRUE))
+write_csv(all.names, "current_names.csv")

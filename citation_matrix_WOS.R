@@ -2,6 +2,49 @@ library('bibliometrix')
 library('stringr')
 library('tidyverse')
 
+# Functions ----
+
+# Load the manual name change document, used by clean.name function
+modified.authors <- read_csv(file = "name_changes.csv") %>% 
+  select(old.name = `OLD NAME`, new.name = `NEW NAME ("NA" to Delete)`)
+
+# Function to clean up names, by shortening them and handling special cases in a manual
+# name change document (name_changes.csv). This ensures multiple instances of a name
+# are all coded in a common format.  The symbol "NA" is used for names to exclude.
+# 
+# Input:
+#       `x` is a string with a full name of an author, ideally in the form LASTNAME FIRSTNAME
+# Returns:
+#       A string with a shortened version of that name, for most cases as LASTNAME INITIAL
+#
+# Examples: 
+#       HEIDEGGER MARTIN      -> HEIDEGGER M 
+#       GUSSERL               -> HUSSERL E
+#       ALCOHOLICS ANONYMOUS  -> NA
+#
+# Feel free to add comments to the manual name change document 
+# https://docs.google.com/spreadsheets/d/14aVjy5vOlNBvnlhcSt5rDbX4conwx4bP6EL1CQkyL2c/edit?usp=sharing
+clean.name <- function(x) {
+  
+  # Ignore NAs
+  if (is.na(x)) {
+    return(NA)
+  }
+  if(x == "NA"){return(NA)}
+  
+  # Manual name changes.  
+  if(x %in% modified.authors$old.name){
+    name.ind <- which(modified.authors$old.name == x)
+    return(modified.authors$new.name[name.ind])
+  }
+  else{
+    # The main algorithm applied to all authors Special cases are above.
+    # Extracts the longest string followed by a space and then the
+    # first letter of the next string
+    return(str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}"))
+  }
+}
+
 # Load and parse articles ------
 
 # Load raw.articles. View it to see main data. 
@@ -12,8 +55,7 @@ citations_file = "raw_articles.rds"
 if (file.exists(citations_file)) {
   raw.articles <- read_rds(citations_file)
 } else {
-  # Pablo: this is not working with current libraries. Can you delete raw_articles.rds and then see if this works or what update is needed?
-  files <- readFiles('data/WoS/citations-1-500.txt','data/WoS/citations-501-1000.txt', 
+  files <- c('data/WoS/citations-1-500.txt','data/WoS/citations-501-1000.txt', 
                      'data/WoS/citations-1001-1500.txt', 'data/WoS/citations-1501-2000.txt', 
                      'data/WoS/citations-2001-2500.txt', 'data/WoS/citations-2501-3000.txt',
                      'data/WoS/citations-3001-3500.txt', 'data/WoS/citations-3501-4000.txt',
@@ -63,33 +105,7 @@ citing.matrix.raw <- citing.matrix.raw %>%
   mutate(first.author) %>%    
   select(first.author, everything())    # Re-order so first.author is first column
 
-# Pablo: Shouldn't shorten.name be moved above this?
-all.names <- c(colnames(citing.matrix.raw), citing.matrix.raw$first.author) %>% 
-  unique() %>% 
-  enframe() %>% 
-  mutate(short.name = shorten.name(value)) %>% 
-  rename(old.name = value) %>% 
-  select(-name) %>% 
-  arrange(old.name) %>% 
-  filter(str_detect(old.name, "[[:digit:]]", negate = TRUE))
-write_csv(all.names, "current_names.csv")
-
-# Pablo, can the next commented out blocks be deleted?
-# first.authors.new <- map_chr(citing.matrix.raw$first.author, function(name){
-#   if(name %in% modified.authors$old.name){
-#     name.ind <- which(modified.authors$old.name == name)
-#     return(modified.authors$new.name[name.ind])
-#   }else{
-#     return(shorten.name(name))}
-# })
-# 
-# citing.matrix.raw$first.author <- first.authors.new 
-# 
-# citing.matrix.raw <- citing.matrix.raw %>% 
-#   group_by(first.author) %>% 
-#   summarize_all(sum)
-
-# Data cleanup
+# Initial data cleanup
 citing.matrix.clean <- citing.matrix.raw %>% 
   # Alphabetize by first.author
   arrange(first.author) %>%   
@@ -103,52 +119,14 @@ citing.matrix.clean <- citing.matrix.raw %>%
 #       file = "~/Desktop/mainAuthors.txt")
 # write(sort(unique(colnames(citing.matrix.clean))), file = "~/Desktop/citedAuthors.txt")
 
-# Pablo: can the next line be removed?
-# reference.names <- read_csv('../scientometrics/temp_fixed_authors.csv', col_names = c("AU", "new.name"))
-
-# Pablo: add brief comment here? 
-modified.authors <- read_csv(file = "name_changes.csv") %>% 
-  select(old.name = `OLD NAME`, new.name = `NEW NAME ("NA" to Delete)`)
-
-# Create shortened names: e.g. HEIDEGGER MARTIN -> HEIDEGGER M Can do
-# hand-wrangling to associate one regex of names with a shortened name TODO:
-# Consider whether this loses information, in particular people with same last
-# name and first initial TODO: DE P, DA SILVA, AL names TODO: Consider authors
-# cited only by last name. e.g. HEIDEGGER, ADORNO, etc. Should be turned into
-# complete name by hand?
-shorten.name <- function(x) {
-  # Input:
-  #       `x` is a string with a full name of an author, ideally in the form LASTNAME FIRSTNAME
-  # Returns:
-  #       A string with a shortened version of that name, for most cases as LASTNAME INITIAL
-  
-  # Start with special cases
-  if (is.na(x)) {
-    return(NA)
-  }
-  if(x == "NA"){return(NA)}
-  if(x %in% modified.authors$old.name){
-    name.ind <- which(modified.authors$old.name == x)
-    print(x)
-    print(modified.authors$new.name[name.ind])
-    return(modified.authors$new.name[name.ind])
-  }
-else{
-    # The main algorithm applied to everyone. Special cases are above.
-    # Extracts the longest string followed by a space and then the
-    # first letter of the next string
-    return(str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}"))
-  }
-}
-
 # Shorten main author names
 short.cited <- colnames(citing.matrix.clean)[-1] %>%  # Don't use the first column name, which is "first.author"
-  map_chr(shorten.name) # Returns a vector of strings with the shortened names in the columns
+  map_chr(clean.name) # Returns a vector of strings with the shortened names in the columns
 
 short.cited <- short.cited[!(is.na(short.cited))]
 
 # Shorten citing authors too so we can align authors and citing authors
-short.citing <- map_chr(citing.matrix.clean$first.author, shorten.name)
+short.citing <- map_chr(citing.matrix.clean$first.author, clean.name)
 citing.matrix.clean <- citing.matrix.clean %>% 
   mutate(first.author = short.citing)
 
@@ -185,7 +163,7 @@ row.names(temp.citing.matrix) <- citing.matrix.clean$first.author
 for(name in sort(colnames(citing.matrix.clean)[-1])){
   # Loop through the names of the cited authors sorted alphabetically
   # Get short version of name
-  short.name <- shorten.name(name)
+  short.name <- clean.name(name)
   print(short.name)
   # Sum old column with short name in new matrix. 
   # this ends up summing multiple versions of the same 
