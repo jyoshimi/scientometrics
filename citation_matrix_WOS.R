@@ -1,6 +1,10 @@
 library('bibliometrix')
 library('stringr')
-library('tidyverse')
+# For R 4.01 on Mac, earlier versions of dplyr
+# Appears to be related to this: https://github.com/tidyverse/dplyr/issues/5017
+# For now can be fixed using this:
+#     devtools::install_version("dplyr", version = "0.8.5", repos = "http://cran.us.r-project.org")
+library('tidyverse') 
 
 # Functions ----
 
@@ -56,11 +60,12 @@ citations_file = "raw_articles.rds"
 if (file.exists(citations_file)) {
   raw.articles <- read_rds(citations_file)
 } else {
-  files <- c('data/WoS/citations-1-500.txt','data/WoS/citations-501-1000.txt', 
-                     'data/WoS/citations-1001-1500.txt', 'data/WoS/citations-1501-2000.txt', 
-                     'data/WoS/citations-2001-2500.txt', 'data/WoS/citations-2501-3000.txt',
-                     'data/WoS/citations-3001-3500.txt', 'data/WoS/citations-3501-4000.txt',
-                     'data/WoS/citations-4001-4500.txt','data/WoS/citations-4501-4543.txt')
+  files <- c('data/WoS/citations1.txt', 'data/WoS/citations2.txt', 
+             'data/WoS/citations3.txt', 'data/WoS/citations4.txt', 
+             'data/WoS/citations5.txt', 'data/WoS/citations6.txt', 
+             'data/WoS/citations7.txt', 'data/WoS/citations8.txt', 
+             'data/WoS/citations9.txt', 'data/WoS/citations10.txt', 
+             'data/WoS/citations11.txt', 'data/WoS/citations12.txt')
   raw.articles <- convert2df(files,dbsource = "isi", format = "plaintext")
   write_rds(raw.articles, citations_file)
 }
@@ -131,6 +136,7 @@ short.citing <- map_chr(citing.matrix.clean$first.author, clean.name)
 citing.matrix.clean <- citing.matrix.clean %>% 
   mutate(first.author = short.citing)
 
+# Ignore NA
 citing.matrix.clean <- citing.matrix.clean %>% 
   filter(!(is.na(first.author)),
          first.author != "NA") 
@@ -140,8 +146,8 @@ citing.matrix.clean <- citing.matrix.clean %>%
 
 # Consolidate redundant rows introduced by shortening names
 # E.g. sum all "ALEXANDER R" rows into one row
-citing.matrix.clean <- citing.matrix.clean %>% 
-  group_by(first.author) %>% 
+citing.matrix.clean <- citing.matrix.clean %>%
+  group_by(first.author) %>%
   summarise_all(sum)
 
 # Pre-allocate a new matrix with consolidated columns.
@@ -165,7 +171,7 @@ for(name in sort(colnames(citing.matrix.clean)[-1])){
   # Loop through the names of the cited authors sorted alphabetically
   # Get short version of name
   short.name <- clean.name(name)
-  print(short.name)
+  # print(short.name)
   # Sum old column with short name in new matrix. 
   # this ends up summing multiple versions of the same 
   # author in the same column on the new matrix 

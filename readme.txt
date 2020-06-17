@@ -24,12 +24,13 @@ Efforts in python, ipynb, and gephi also included, but not used
 
 GETTING DATA FROM WEB OF SCIENCE
 
-http://apps.webofknowledge.com/WOS_GeneralSearch_input.do?product=WOS&search_mode=GeneralSearch&SID=6Ab49AoDqVSMbAU6NEu&preferencesSaved=
+http://apps.webofknowledge.com/
 
-Search: 
+Basic Search: 
 	Topic: "Phenomenology" 
 	Timespan: 1970-2017
 	More settings: only use core collection
+	Then press "search"
 
 Filter:  (Select -> Refine)
 
@@ -44,7 +45,7 @@ Summary: You searched for: TOPIC: (phenomenology)
 
 Save:
 
-	Save to other file formats
+	Export 	> Other file formats
 		500 at a time
 		Full record and Cited References
 		Format:plain text

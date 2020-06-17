@@ -1,61 +1,100 @@
-INSTRUCTIONS FOR GEPHI
+MAIN GRAPH 
 
-SETUP
+- Open the .graphml file produced by the R analysis file. Use defaults to import.
 
-1. Before opening gephi, download two plugins from gephi website:
-	a. CIRCLE PACK https://gephi.org/plugins/#/plugin/circularlayout 
-	b. Groups by partition https://gephi.org/plugins/#/plugin/group-partition-gephi-plugin
-2. Open gephi and install plugins
-3. After restarting gephi, go to File > Open and open the Graphml file. Open in new workspace.
-4. In overview, go to Appearance > Nodes > Partition, and choose the parameter "community". This is the community partition previously done in R. Apply it.
-5. Under Layout, choose "OpenOrd". Use the following parameters. These parameters are the drl_defaults$defaults settings in R.
-	a. In Stages": 25, 25, 25, 5, 20.
-	b. In "OpenOrd": unchanged, unchanged, 1000, 0.2, 1.
-The last one is the random seed. I generated the graphs using this seed. Run the layout algorithm. Note that you can save this as a preset.
+- Data Laboratory Tab
 
-MANUALLY CREATE VISIBLE LABELS
+	- Edit the display_label field to your liking. 
+		- Don't use too many labels. They get unruly.
 
-6. Now we do some dirty work. Go to Data Laboratory and be sure Window > Datatable is selected. Now press the Add column button at the bottom. Name it "new_label".
-7. Now just manually edit to include labels you want. One way to do this is to open the file "top_authors_by_community.csv" and only add the names of the authors in that file.
-8. Data Laboratory > Copy data to other column > name. Copy it to "Label". This will make things easier in the future.
-9. In overview, click the "Show node labels" button. This will show all labels. To show only the top labels, click the small arrow pointing down on the lower right corner of the window, which will expand a small menu with 3 tabs: Global, Edges and Labels. Go the Labels tab, click the "Configure" button, and choose to display only the "new_label" column.
-10. Appearance > Label Size > Ranking > In-Degree or Strength if you want to make labels be proportional to the influence of that node. Spline and picking a logarithmic curve is my preferred visualization. Pick a min size of 0.1 and a max size of e.g. 3.
-11. Appearance > Label color > Partition > Community.
-11. Layout > Label Adjust does a little of jittering to the nodes' positions to  make labels not overlap. 
-12. This is the _complete_ network. You can go to Preview and save it. Some good parameters: 
-	- Node outline size: 2
-	- Edge thickness: 0.1.
-	- Rescale edge weight: TRUE
-	- Edge color: SOURCE
+	- Copy display_label to label since the preview tab uses it
+		- "Copy data to other column" > display_label > Select "label"
 
-MAKE SPARSER NETWORK
+- Overview tab
 
-13. Go back to Overview. We'll do some filtering to produce a sparser network. 
-14. Go to Filter > Topology > In-degree Range and drag the filter to the "Query" part of the window. Define the minimum in-degree treshold. A good value is 2.
-15. Add a second filter, this time for edges. Filter > Attributes > Intra Edges > community, and drag it to the "subfilter" part of the queries window. This (i think???) keeps only between community edges.
-16. Create a new workspace starting from this filtering. This button is right next to the "reset" button in the "filters" part of the window. This will open a new workspace that has only the filtered nodes and edges. To reset the palette to the new reduced number of communities, you can repeat steps 4, 9, 10 and 11.
-17. Save this new graph. I find that this sparser network looks better with straight edges, so you could use the "Default Straight" preset.
+	- Unselect Show Edges
+	
+	- Appearance > Nodes > Partition > "Community"
+		- Adjust palette to your liking and then use this later for the group-based graph
+		- Palette > Generate... > Uncheck limit colors > 
+	
+	- Appearance > Nodes > Size > Unique > 5
+	
+	- Layout  
+		Choice 1: Layout > Force Atlas 2
+		Choice 2: Layout > OpenOrd (suggest setting a random seed)
+		
+	- Label display
+		- Click Show Node Labels button at bottom
+		- Appearance > Label Size > Ranking > Degree or Strength 
+			- Min Size 2 and a max size of 5, or larter
+			- Can choose scaling in "spline".  Pablo likes logarithmic
+			- (Note the size in overview gets much smaller in preview)
+		- (Optional) Appearance > Label color > Partition > Community.
+		- Layout > Label Adjust to get the labels not to overlap
 
-CREATE GROUP BASED NETWORK
+- Preview tab
+	- Node labels > show labels: checked
+	- Node labels > proportional size: checked
+	- Node labels > color: custom > black
+	- Node labels > outline opacity > 0
+	- Node labels > box > unchecked
+	- Edges > thickness: 0.1.
+	- Edges > color: source
+	- Edges > opacity: 10
+	- Export > select png 
+		- Options button to determine resolution via size of image
 
-18. Now for the group network. Go to Tools > Generate groups by partition and create a new workspace.
-19. The new nodes have size proportional to their number of members and a Label according to the first alphabetical author in their group, which sucks. This is what we use the "community stats" file. 
-20. For this step, we use the Data Laboratory for both the sparse network and the group network. Create a new column called "community_number". Look in the sparse network data laboratory for the number of the community for the author specified in the "Label" column of the group workspace, and fill that number in the corresponding community_number column.
-	- For example, in the "Label" part of my group workspace, the first row reads "Group of BEHNKE E". If I go to the data laboratory of the sparse workspace and look for BEHNKE E, I find he's in community 7.
-21. Now we can rename those communities. A methodology is to use the top/top n authors for each community, which you can find in top_authors_by_community.csv. Remember that the column COMMUNITY NUMBER is the same as the `community` column in these csv. You can also name them topically (for example, "phil mind group"). You do this by overwriting the values on the Label column. 
-22. We can scale the nodes by using any of the stats in the community_stats.csv file. I like how "Mean_degree" looks. Input the values for each community in the "Size" column.
-23. Almost done! There's a couple of reasonable layouts. One of them is just a random layout. A "space size" of 1500 tends to work well. A circular layout with a fixed diameter of 1000 looks pretty good too. A final possibility is to run any other layout (say, "force atlas"), with which all the nodes are gonna clump on the center. Stop it, and then apply the "Noverlap" layout with a margin of around 100. This will make a tight but pretty orderly visualization. 
-24. Exporting this graph requires a little more of tweaking. Choose "Default Curved", and use the following parameters:
-	- Show labels: TRUE
-	- Font size: 48
-	- Proportional size: FALSE
-	- Color: Parent
-	- Outline size: 5
-	- Edges thickness: 0.1
-	- Rescale weight: TRUE
-	- Min rescaled weight: 0.1
-	- Max rescaled weight: 50
-	- Edge color: Source
-This is the "group_network" plot that you can export. 
 
-Done!!
+GROUP-BASED NETWORK
+
+- Install plugins. Both must be downloaded first.
+	Circular layout
+		-  https://gephi.org/plugins/#/plugin/circularlayout 
+	Groups by partition
+		https://gephi.org/plugins/#/plugin/group-partition-gephi-plugin
+
+- Make sure the main graph is open in a workspace
+
+- Tools > Generate groups by partition > Create new workspace
+
+- Data Laboratory Tab
+	- The size field corresponds to the size field in community_stats.csv.  	
+	- Match size to size in community_stats.csv and use this to hand set the labels to "Husserl", "Heidegger", etc.
+	- Manually remove remaining nodes from the table
+	- Manually remove self-connections
+	- Edges > Copy size to label
+
+- Overview Tab
+	- Appearance > Nodes > Size > Ranking > Size. Min 50 / Max 100
+	- Appearance > Nodes > Color > Partition > Size (Pastel palette)
+	- Appearance > Nodes > Text > Size > Unique > .5
+	- Appearance > Edges > Text > Sizes > Min 5 / Max 10
+	- Layout > circular layout
+		- Diamter: 1000
+	- Random layout
+		- Space Size: 1500
+
+- Preview tab 
+	- Node labels > Show labels: checked
+	- Node labels > Font size: 48
+	- Node labels > Proportional size: unchecked
+	- Node labels > Outline size: 5
+	- Edges > thickness: 0.1
+	- Edges > Rescale weight: checked
+	- Edges > Min rescaled weight: 10
+	- Edges > Max rescaled weight: 100
+	- Edges > Edge color: Source
+	- Edges > Opacity: 40
+	- Edge Labels > Show labels: checked
+	- Edge Labels > Font size: 36
+
+- Save as SVG and fine tune in illustrator
+
+TO MAKE A SPARSER NETWORK
+
+- Go back to Overview. We'll do some filtering to produce a sparser network. 
+- Go to Filter > Topology > In-degree Range and drag the filter to the "Query" part of the window. Define the minimum in-degree treshold. A good value is 2.
+- Add a second filter, this time for edges. Filter > Attributes > Intra Edges > community, and drag it to the "subfilter" part of the queries window. This (i think???) keeps only between community edges.
+- Create a new workspace starting from this filtering. This button is right next to the "reset" button in the "filters" part of the window. This will open a new workspace that has only the filtered nodes and edges. To reset the palette to the new reduced number of communities, you can repeat steps 4, 9, 10 and 11.
+- Save this new graph. I find that this sparser network looks better with straight edges, so you could use the "Default Straight" preset.
