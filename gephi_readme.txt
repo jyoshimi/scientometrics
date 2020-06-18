@@ -14,15 +14,15 @@ MAIN GRAPH
 
 	- Unselect Show Edges
 	
-	- Appearance > Nodes > Partition > "Community"
-		- Adjust palette to your liking and then use this later for the group-based graph
-		- Palette > Generate... > Uncheck limit colors > 
-	
 	- Appearance > Nodes > Size > Unique > 5
-	
+
+	- Appearance > Nodes > Partition > "Community"
+		- Adjust palette to your liking 
+		- Palette > Generate... > Uncheck limit colors 
+		
 	- Layout  
 		Choice 1: Layout > Force Atlas 2
-		Choice 2: Layout > OpenOrd (suggest setting a random seed)
+		Choice 2: Layout > OpenOrd (suggest setting a random seed of eg. 1)
 		
 	- Label display
 		- Click Show Node Labels button at bottom
