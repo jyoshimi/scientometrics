@@ -89,10 +89,14 @@ opposite.weights <- function(community, network, weight.within = 0, weight.betwe
 
 # Code snippets to print and save stats ------
 
+# Basic stats
+# vcount(net.directed) # node count. or use nrow(nodes) 
+# ecount(net.directed) # edge count
+
 # Get top N authors by indegree
 # tops <- nodes %>%
-#   top_n(100,degree) %>%
-#   mutate(name = str_to_title(name)) %>%
+#   top_n(10,degree) %>%
+#   mutate(name = strip_initial(str_to_title(name))) %>%
 #   arrange(desc(degree))
 # write_csv(tops,"tops.csv")
 
@@ -104,16 +108,17 @@ opposite.weights <- function(community, network, weight.within = 0, weight.betwe
 # write_csv(all.members, "all_authors_by_community.csv") # uncomment this line to save result to csv
 
 # Top in-degree authors in each cluster
-# This must be uncommented for use below
-#  If filtering by degree 1 issue arises because top 1 returns more than one result.
+# Used for display level.
 top.per.cluster <- nodes %>%
   group_by(community) %>%
   mutate(size = n()) %>% 
   top_n(1, degree) %>%
-  filter(degree > 5) %>%
+  distinct(community, degree, .keep_all = TRUE) %>% 
+  filter(size > 1) %>%
   arrange(community, desc(degree)) %>%
   select(name, strength, degree, size, community) %>%
-  mutate(name = str_to_title(name)) 
+  # select(name, community) %>%
+  mutate(name = strip_initial(str_to_title(name))) 
 write_csv(top.per.cluster, "top_authors_by_community.csv") # uncomment this line to save result to csv
 
 # Communities and community statistics
@@ -129,9 +134,7 @@ com.stats <- nodes %>%
   mutate(community = factor(community, labels = strip_initial(top.per.cluster$name)))
 write_csv(com.stats, "community_stats.csv") 
 
-# Num authors overall:
-# nrow(nodes)
-# Number who self-cite
+# Number of authors who self-cite
 # edge.list %>% filter(Source == Target) %>% nrow 
 
 # Get citing authors
@@ -167,14 +170,13 @@ tidynet <- tidynet %>%
          community = factor(community))
 
 # Exaggerate community structure
-# Comment out to ignore
-# Rescale within and between community weights 
+# Rescale within and between community weights. Set weights to 1 to ignnore.
 # Inspired by https://stackoverflow.com/questions/16390221/how-to-make-grouped-layout-in-igraph
-# edge.weights <- function(community, network, weight.within = 1.5, weight.between = 1) {
-#   bridges <- crossing(communities = community, graph = network)
-#   weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
-#   return(weights)
-# }
+edge.weights <- function(community, network, weight.within = 1, weight.between = 1) {
+  bridges <- crossing(communities = community, graph = network)
+  weights <- ifelse(test = bridges, yes = weight.between, no = weight.within)
+  return(weights)
+}
 # change below to directed or undirected *
 group.edges <- edge.weights(net.communities, net.directed)
 
@@ -186,9 +188,9 @@ net.directed <- igraph::set.edge.attribute(graph = net.directed, name = "weight"
 # Create display labels for gephi
 display.labels <- igraph::vertex.attributes(net.directed)[[1]] %>% 
   map_chr(function(name){
-    name <- stringr::str_to_title(name)
+    name <- strip_initial(stringr::str_to_title(name))
     if(name %in% top.per.cluster$name){
-      return(strip_initial(name))
+      return(name)
       } else {return("")}
   })
 net.directed <- igraph::set.vertex.attribute(graph = net.directed, name = "display_label",
@@ -303,58 +305,60 @@ get.sub.net <- function(net, author){
     as.undirected()
   author.net.directed <- induced.subgraph(net, which(V(net)$community == author.community))
   author.clusters <- detect.community(author.net.undirected)
-
   author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "community",
                                                       value = igraph::membership(author.clusters))
   author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "degree", value = degree(author.net.directed, mode = "in"))
 
+  tidy.author.net <- tidygraph::as_tbl_graph(author.net.directed)
+
+  # TODO: Pablo might clean this up.  Also note that something similar is done for the whole graph.
+  
+  # Lists top members of each community
   author.top.members <- tidygraph::as_tbl_graph(author.net.directed) %>% 
     tidygraph::activate(nodes) %>%
     as_tibble() %>% 
-    filter(degree > 20) %>% 
+    filter(degree > 5) %>% 
     group_by(community) %>%
     top_n(10, degree) %>%
     arrange(community, desc(degree)) %>%
     mutate(name = strip_initial(str_to_title(name))) %>% 
     select(name, degree, strength, community)
   
-  top.per.community <- tidygraph::as_tbl_graph(author.net.directed) %>% 
+  # Labels for stats
+  community.labels <- tidygraph::as_tbl_graph(author.net.directed) %>% 
     tidygraph::activate(nodes) %>%
     as_tibble() %>% 
     group_by(community) %>%
-    mutate(size = n()) %>% 
     top_n(1, degree) %>%
-    mutate(name = strip_initial(str_to_title(name))) %>% 
-    select(name, degree, strength, size, community)
+    distinct(community, .keep_all = TRUE) %>% 
+    mutate(name = strip_initial(str_to_title(name))) 
 
-  author.top.labels <- igraph::vertex.attributes(author.net.directed)[[1]] %>%
-    map_chr(function(name){
-      name <- stringr::str_to_title(name)
-      if(name %in% author.top.members$name){
-        return(name)
-      } else {return("")}
-    })
-  # print(author.top.labels)
-
-  author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "display.name",
-                                               value = author.top.labels)
-  tidy.author.net <- tidygraph::as_tbl_graph(author.net.directed)
-
+  # Set up community statistic
   author.nodes <- tidy.author.net %>%
     activate(nodes) %>%
     as_tibble
-
   author.com.stats <- author.nodes %>%
     group_by(community) %>%
-    summarize(sum.degree = sum(degree),
-              mean.degree = mean(degree),
-              sum.strength = sum(strength),
-              mean.strength = mean(strength))
-  
+    summarize(sum.strength = sum(strength),
+              sum.degree = sum(degree),
+              size = n()) %>% 
+  mutate(community = factor(community, labels = strip_initial(community.labels$name))) %>% 
+  arrange(desc(sum.strength)) 
+    
+  # author.top.labels <- igraph::vertex.attributes(author.net.directed)[[1]] %>%
+  #   map_chr(function(name){
+  #     name <- stringr::str_to_title(name)
+  #     if(name %in% author.top.members$name){
+  #       return(name)
+  #     } else {return("")}
+  #   })
+  # # print(author.top.labels)
+  # 
+  # author.net.directed <- igraph::set.vertex.attribute(graph = author.net.directed, name = "display.name",
+  #                                                     value = author.top.labels)
   # tidy.author.net <- tidy.author.net %>%
   #   activate(edges) %>%
   #   mutate(inverse.weight = (E(author.net.directed)$weight * opposite.weights(author.clusters, author.net.directed)) ^ 2)
-  # 
   # author.group.edges <- edge.weights(author.clusters, author.net.directed)
   # 
   # author.net.layout <- igraph::layout.drl(author.net.directed, options = drl_defaults$default, weights = (E(author.net.directed)$weight * author.group.edges))
@@ -398,8 +402,8 @@ get.sub.net <- function(net, author){
   return(list(igraph.network = author.net.directed,
               nodes.attributes = author.nodes,
               top.members.comm = author.top.members,
-              top.per.community = top.per.community, 
-              stats = com.stats))
+              top.per.community = community.labels, 
+              stats = author.com.stats))
 }
 
 # Manually use the get.sub.net function for communities of interest
@@ -407,10 +411,13 @@ get.sub.net <- function(net, author){
 # Husserl sub-community------
 husserl.net <- get.sub.net(net.directed, "HUSSERL E")
 
-# Top members
+# Stats
 husserl.top.members <- husserl.net$top.members.comm
 write_csv(husserl.top.members, "husserl_communities.csv")
-husserl.net$top.per.community
+write_csv(husserl.net$top.per.community, "husserl_tops.csv")
+write_csv(husserl.net$stats, "husserl_stats.csv") # uncomment this line to save result to csv
+
+# Husserl.net$nodes.attributes %>% View
 # Number of exclusively cited authors:sum(husserl.top.members$outdegree == 0)  
 # Number of citing authors: sum(husserl.top.members$outdegree > 0)  
 # Number of authors in "Husserl Cluster" who don't cite Husserl: 111
@@ -419,9 +426,7 @@ husserl.net$top.per.community
 # husserl.net$hive # Hive plot object
 # husserl.net$visualization # Network plot object
 # ggsave(plot = husserl.net$hive, "husserl_hive.pdf", height = 14, width = 14, units = "in", dpi = 500)
-# Stats
-# husserl.net$stats
-# write_csv(husserl.net$stats, "husserl_stats.csv") # uncomment this line to save result to csv
+
 
 
 # Heidegger sub-community------
