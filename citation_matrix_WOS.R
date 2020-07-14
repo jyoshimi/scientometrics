@@ -29,13 +29,11 @@ modified.authors <- read_csv(file = "name_changes.csv") %>%
 # Feel free to add comments to the manual name change document 
 # https://docs.google.com/spreadsheets/d/14aVjy5vOlNBvnlhcSt5rDbX4conwx4bP6EL1CQkyL2c/edit?usp=sharing
 clean.name <- function(x) {
-  
   # Ignore NAs
   if (is.na(x)) {
     return(NA)
   }
   if(x == "NA"){return(NA)}
-  
   # Manual name changes.  
   if(x %in% modified.authors$old.name){
     name.ind <- which(modified.authors$old.name == x)
@@ -77,8 +75,171 @@ parsed.articles <- metaTagExtraction(M = raw.articles, Field = "CR_AU")
 
 # An article-by-cited-author matrix.
 # Each cell is a count of how many times an article (row) cited an author (column)
-citing.matrix.raw <- cocMatrix(parsed.articles, Field = "CR_AU", type = "matrix", sep = ";") %>% 
+citing.matrix <- cocMatrix(parsed.articles, Field = "CR_AU", type = "matrix", sep = ";") %>% 
   as_tibble()
+
+# Wrangle the data -----
+
+# Parse out the original authors (AU) and save only the first author in multi-authored pieces
+first.author <- map_chr(strsplit(parsed.articles$AU, ';'), function(x){return(x[1])})
+
+# Add first author as first column
+citing.matrix <- citing.matrix %>% 
+  mutate(first.author = first.author) %>%    
+  select(first.author, everything())    # Re-order so first.author is first column
+
+# Initial data cleanup
+citing.matrix <- citing.matrix %>% 
+  # Alphabetize by first.author
+  arrange(first.author) %>%   
+  # Filter out rows
+  filter(first.author != "NA", !str_detect(first.author,"ANONYMOUS"), !(is.na(first.author))) %>% 
+  # Removing columns with numbers
+  select(-matches("[[:digit:]]"))
+
+# Shorten main author names
+short.cited <- colnames(citing.matrix)[-1] %>%  # Don't use the first column name, which is "first.author"
+  map_chr(clean.name) # Returns a vector of strings with the shortened names in the columns
+short.cited <- short.cited[!(is.na(short.cited))]
+
+# Shorten citing authors too so we can align authors and citing authors
+short.citing <- map_chr(citing.matrix$first.author, clean.name)
+citing.matrix <- citing.matrix %>% 
+  mutate(first.author = short.citing)
+
+# Consolidate the columns
+# Number of rows is same as citing matrix. 
+# Number of columns is number of unique cited authors
+citing.matrix.clean <- matrix(
+  0,
+  nrow =  nrow(citing.matrix),
+  ncol = length(unique(short.cited)),
+  dimnames = list(citing.matrix$first.author, unique(short.cited))
+)
+
+# Transform df into matrix. Temporary table for column consolidation
+temp.citing.matrix <- citing.matrix[,-1] %>% 
+  as.matrix()
+row.names(temp.citing.matrix) <- citing.matrix$first.author
+
+# Now consolidate columns of the citing matrix
+# Manually does for columns what the row consolidation does below for row
+for(name in sort(colnames(citing.matrix)[-1])){
+  # Loop through the names of the cited authors sorted alphabetically
+  # Get short version of name
+  short.name <- clean.name(name)
+  print(name)
+  print(short.name)
+  # Sum old column with short name in new matrix. 
+  # this ends up summing multiple versions of the same 
+  # author in the same column on the new matrix 
+  # (v.gr. "ADORNO", "ADORNO T" "ADORNO TW" "ADORNO T W" etc)
+  if(!(is.na(short.name))){
+    new.vector <- citing.matrix.clean[, short.name] + temp.citing.matrix[, name]
+    citing.matrix.clean[, short.name] <- new.vector
+  }
+}
+
+# Cleanup: Remove any cited author with less than 1 citation
+# (that is, only 1 citing author cited them only 1 time)
+# and articles that have only 1 citation (probably noise)
+citing.matrix.clean <- citing.matrix.clean[,colSums(citing.matrix.clean) > 1]
+citing.matrix.clean <- citing.matrix.clean[rowSums(citing.matrix.clean) > 1,]
+# Ignore NA
+citing.matrix.clean <- citing.matrix.clean[!(is.na(row.names(citing.matrix.clean))),]
+citing.matrix.clean <- citing.matrix.clean[row.names(citing.matrix.clean) != "NA",]
+# Sort cited authors
+citing.matrix.clean <- citing.matrix.clean[,sort(colnames(citing.matrix.clean))]
+
+# Save for co-citation before consolidating citing authors
+co.citation.matrix <- citing.matrix.clean
+# Remove raw citing for memory
+rm(citing.matrix)
+
+citing.matrix.clean <- as_tibble(citing.matrix.clean) %>% 
+  add_column(first.author = rownames(citing.matrix.clean))
+
+# Consolidate redundant rows introduced by shortening names
+# E.g. sum all "ALEXANDER R" rows into one row
+citing.matrix.clean <- citing.matrix.clean %>%
+  group_by(first.author) %>%
+  summarise_all(sum)
+
+# Save matrices ------
+
+# Transform both matrices into sparse for backup saving 
+# This uses the Matrix package
+# To preserve column and row names, you have to save them separately
+citing.matrix.backup <- citing.matrix.clean %>% 
+  select(-first.author) %>% 
+  as.matrix %>% 
+  Matrix::Matrix(sparse = TRUE)
+write(colnames(citing.matrix.clean)[-1], "complete_matrix_colnames.txt")
+write(row.names(citing.matrix.clean), "complete_matrix_rownames.txt")
+Matrix::writeMM(citing.matrix.backup, "complete_matrix.txt")
+rm(citing.matrix.backup)
+
+# Make edge lists ------
+
+# Now make the edge list for the network.
+# This is a directed edge list, so it's a "long" (vs "wide") version of the matrix.
+# See https://data.ca.gov/uploads/page_images/2019-08-28-194741.855848DataPreplong-wide.jpg
+# Column 1 is CITING author, column 2 is CITED author, column 3 is number of time CITING author cited CITED author.
+# complete.citing.authors <- read.delim("complete_matrix_rownames.txt", header = FALSE)
+# Gather turns a wide data frame into a long data frame
+complete.edge.list <- gather(citing.matrix.clean, "Target", "Weight", -first.author) %>% 
+  rename(Source = first.author) %>% 
+  filter(Weight > 0)
+
+# These are the things we will use in the network analysis
+write_csv(complete.edge.list, "complete_edge_list.csv")
+
+# Make co-citation matrix -----
+
+# change to binary to count occurrences
+co.citation.matrix[co.citation.matrix > 0] <- 1
+# Transpose
+co.citation.matrix <- t(co.citation.matrix)
+# Next, multiply by its transposed.
+# tcrossprod(x) = x %*% t(x)
+co.citation.matrix <- tcrossprod(co.citation.matrix)
+# This is a citing author x citing author matrix.
+# Single co-citations (cell = 1) is probably noise, so get rid of those (replace with 0).
+co.citation.matrix[co.citation.matrix == 1] <- 0
+
+# Set the diagonal to 0, it's meaningless.
+diag(co.citation.matrix) <- 0
+
+# Clean rows and columns with only 0s
+co.citation.matrix <- co.citation.matrix[rowSums(co.citation.matrix) > 0,]
+co.citation.matrix <- co.citation.matrix[,colSums(co.citation.matrix) > 0]
+
+# Count the number of non-zero elements per row and column.
+# If an author only co-appears with one other author, probably noise.
+
+cutoff <- 1
+non.zero <- apply(co.citation.matrix, 1, function(row){
+  number.non.zero <- sum(row > 0)
+  return(ifelse(number.non.zero <= cutoff, FALSE, TRUE))
+  return(sum(row > 0))
+})
+
+co.citation.matrix <- co.citation.matrix[non.zero, non.zero]
+
+# Save matrix
+write(colnames(co.citation.matrix), "cocitation_matrix_colnames.txt")
+write(row.names(co.citation.matrix), "cocitation_matrix_rowames.txt")
+Matrix::writeMM(Matrix::Matrix(co.citation.matrix), "cocitation_matrix.txt")
+
+# Make and save edge list
+
+co.citation.edge.list <- co.citation.matrix %>% 
+  as_tibble(rownames = "Source") %>% 
+  gather("Target", "Weight", -Source) %>% 
+  filter(Weight > 0)
+write_csv(co.citation.edge.list, "cocitation_edge_list.csv")
+
+# Code Purgatory ------------
 
 # Useful code snippets ------
 # write(sort(unique(colnames(citing.matrix.raw))), file = "~/Desktop/citedAuthors.txt")
@@ -101,148 +262,47 @@ citing.matrix.raw <- cocMatrix(parsed.articles, Field = "CR_AU", type = "matrix"
 # nrow(hegel.folks)
 # View(hegel.folks) # Peruse titles and references. Suggests this really is a mainly Hegel discussion
 
-# Wrangle the data -----
 
-# Parse out the original authors (AU) and save only the first author in multi-authored pieces
-first.author <- map_chr(strsplit(parsed.articles$AU, ';'), function(x){return(x[1])})
 
-# Add first author as first column
-citing.matrix.raw <- citing.matrix.raw %>% 
-  mutate(first.author) %>%    
-  select(first.author, everything())    # Re-order so first.author is first column
 
-# Initial data cleanup
-citing.matrix.clean <- citing.matrix.raw %>% 
-  # Alphabetize by first.author
-  arrange(first.author) %>%   
-  # Filter out rows
-  filter(first.author != "NA", !str_detect(first.author,"ANONYMOUS"), !(is.na(first.author))) %>% 
-  # Removing columns with numbers
-  select(-matches("[[:digit:]]"))
-  
 # Snippet to create a list of cited authors
 # write(unlist(unique(citing.matrix.clean[,"first.author"]),use.names = FALSE), 
 #       file = "~/Desktop/mainAuthors.txt")
 # write(sort(unique(colnames(citing.matrix.clean))), file = "~/Desktop/citedAuthors.txt")
 
-# Shorten main author names
-short.cited <- colnames(citing.matrix.clean)[-1] %>%  # Don't use the first column name, which is "first.author"
-  map_chr(clean.name) # Returns a vector of strings with the shortened names in the columns
-
-short.cited <- short.cited[!(is.na(short.cited))]
-
-# Shorten citing authors too so we can align authors and citing authors
-short.citing <- map_chr(citing.matrix.clean$first.author, clean.name)
-citing.matrix.clean <- citing.matrix.clean %>% 
-  mutate(first.author = short.citing)
-
-# Ignore NA
-citing.matrix.clean <- citing.matrix.clean %>% 
-  filter(!(is.na(first.author)),
-         first.author != "NA") 
 
 # Snippet to inspect shortened names
 # write(sort(unique(short.names)), file = "~/Desktop/shortnames.txt")
 
-# Consolidate redundant rows introduced by shortening names
-# E.g. sum all "ALEXANDER R" rows into one row
-citing.matrix.clean <- citing.matrix.clean %>%
-  group_by(first.author) %>%
-  summarise_all(sum)
-
-# Pre-allocate a new matrix with consolidated columns.
-# Number of rows is same as citing matrix. 
-# Number of columns is number of unique cited authors
-new.citing.matrix <- matrix(
-  0,
-  nrow =  nrow(citing.matrix.clean),
-  ncol = length(unique(short.cited)),
-  dimnames = list(citing.matrix.clean$first.author, unique(short.cited))
-)
-
-# Transform df into matrix. Temporary table for column consolidation
-temp.citing.matrix <- citing.matrix.clean[,-1] %>% 
-  as.matrix()
-row.names(temp.citing.matrix) <- citing.matrix.clean$first.author
-
-# Now consolidate the COLUMNS of the citing matrix
-# Manully does for columns what the row consolidation above does for row
-for(name in sort(colnames(citing.matrix.clean)[-1])){
-  # Loop through the names of the cited authors sorted alphabetically
-  # Get short version of name
-  short.name <- clean.name(name)
-  # print(short.name)
-  # Sum old column with short name in new matrix. 
-  # this ends up summing multiple versions of the same 
-  # author in the same column on the new matrix 
-  # (v.gr. "ADORNO", "ADORNO T" "ADORNO TW" "ADORNO T W" etc)
-  if(!(is.na(short.name))){
-    new.vector <- new.citing.matrix[, short.name] + temp.citing.matrix[, name]
-    new.citing.matrix[, short.name] <- new.vector
-    }
-}
 
 # Snippets for inspection
 # write(sort(unique(rownames(new.citing.matrix))), file = "~/Desktop/new_mainAuthors.txt")
 # write(sort(unique(colnames(new.citing.matrix))), file = "~/Desktop/new_citedAuthors.txt")
 
-# Cleanup: Remove any cited author with less than 1 citation
-# (that is, only 1 citing author cited them only 1 time)
-new.citing.matrix <- new.citing.matrix[, colSums(new.citing.matrix) > 1]
-new.citing.matrix <- new.citing.matrix[,sort(colnames(new.citing.matrix))]
+# 
+# 
+# # Create small matrix ------
+# 
+# small.threshold <- 5
+# 
+# # For the small matrix, remove cited authors with less than small.threshold citations
+# small.citing.matrix <- citing.matrix.clean[, colSums(citing.matrix.clean) >= small.threshold]
+# # Also remove citing authors who cited only authors with less than small.threshold citations
+# # That is, citing authors with only 0 now in their whole row
+# small.citing.matrix <- small.citing.matrix[rowSums(small.citing.matrix) >= 0,]
+# small.citing.matrix <- small.citing.matrix %>% 
+#   Matrix::Matrix(sparse = TRUE)
+# write(colnames(small.citing.matrix), "small_matrix_colnames.txt")
+# write(row.names(small.citing.matrix), "small_matrix_rownames.txt")
+# Matrix::writeMM(small.citing.matrix, "small_matrix.txt")
 
-# Create small matrix ------
+# small.citing.authors <- read.delim("small_matrix_rownames.txt", header = FALSE)
+# small.citing.matrix <- small.citing.matrix %>% 
+#   as.matrix %>% 
+#   as_tibble() %>% 
+#   mutate(first.author = small.citing.authors$V1)
+# small.edge.list <- gather(small.citing.matrix, "Target", "Weight", -first.author) %>% 
+#   rename(Source = first.author) %>% 
+#   filter(Weight > 0)
 
-small.threshold <- 5
-
-# For the small matrix, remove cited authors with less than small.threshold citations
-small.citing.matrix <- new.citing.matrix[, colSums(new.citing.matrix) >= small.threshold]
-# Also remove citing authors who cited only authors with less than small.threshold citations
-# That is, citing authors with only 0 now in their whole row
-small.citing.matrix <- small.citing.matrix[rowSums(small.citing.matrix) >= 0,]
-
-# Save matrices ------
-
-# Transform both matrices into sparse for backup saving 
-# This uses the Matrix package
-# To preserve column and row names, you have to save them separately
-new.citing.matrix <- new.citing.matrix %>% 
-  Matrix::Matrix(sparse = TRUE)
-write(colnames(new.citing.matrix), "complete_matrix_colnames.txt")
-write(row.names(new.citing.matrix), "complete_matrix_rownames.txt")
-Matrix::writeMM(new.citing.matrix, "complete_matrix.txt")
-small.citing.matrix <- small.citing.matrix %>% 
-  Matrix::Matrix(sparse = TRUE)
-write(colnames(small.citing.matrix), "small_matrix_colnames.txt")
-write(row.names(small.citing.matrix), "small_matrix_rownames.txt")
-Matrix::writeMM(small.citing.matrix, "small_matrix.txt")
-
-
-# Make edge lists ------
-
-# Now make the edge list for the network.
-# This is a directed edge list, so it's a "long" (vs "wide") version of the matrix.
-# See https://data.ca.gov/uploads/page_images/2019-08-28-194741.855848DataPreplong-wide.jpg
-# Column 1 is CITING author, column 2 is CITED author, column 3 is number of time CITING author cited CITED author.
-complete.citing.authors <- read.delim("complete_matrix_rownames.txt", header = FALSE)
-new.citing.matrix <- new.citing.matrix %>% 
-  as.matrix %>% 
-  as_tibble() %>% 
-  add_column(first.author = complete.citing.authors$V1)
-small.citing.authors <- read.delim("small_matrix_rownames.txt", header = FALSE)
-small.citing.matrix <- small.citing.matrix %>% 
-  as.matrix %>% 
-  as_tibble() %>% 
-  mutate(first.author = small.citing.authors$V1)
-# Gather turns a wide data frame into a long data frame
-complete.edge.list <- gather(new.citing.matrix, "Target", "Weight", -first.author) %>% 
-  rename(Source = first.author) %>% 
-  filter(Weight > 0)
-small.edge.list <- gather(small.citing.matrix, "Target", "Weight", -first.author) %>% 
-  rename(Source = first.author) %>% 
-  filter(Weight > 0)
-
-# These are the things we will use in the network analysis
-write_csv(complete.edge.list, "complete_edge_list.csv")
 write_csv(small.edge.list, "small_edge_list.csv")
-

@@ -19,6 +19,10 @@ detect.community <- igraph::cluster_louvain
 edge.list <- read_csv('complete_edge_list.csv') %>%
   rename(weight = Weight) %>% 
   filter(Source != Target) # To remove self-citations
+source('network.R')
+
+x <- analyze.network(edge.list)
+x <- analyze_network()
 
 # Create network ------
 
@@ -31,9 +35,16 @@ net.undirected <- igraph::graph_from_data_frame(edge.list, directed = FALSE) %>%
 # Build a igraph network, which is a directed network built from the edge list
 net.directed <- igraph::graph_from_data_frame(edge.list, directed = TRUE)
 
+
+x <- cluster_fast_greedy(net.directed)
+
+
+
 # Run chosen community detection algorithm
 # * Must change depending on which detection alg is used
 net.communities <- detect.community(net.undirected)
+
+
 
 # Add indegree, WEIGHTED in-degree (a.k.a. strength) and 
 # community as vertex attributes to the igraph network.
