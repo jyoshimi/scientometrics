@@ -102,6 +102,8 @@ short.cited <- colnames(citing.matrix)[-1] %>%  # Don't use the first column nam
 short.cited <- short.cited[!(is.na(short.cited))]
 
 # Shorten citing authors too so we can align authors and citing authors
+
+old.citing <- citing.matrix$first.author
 short.citing <- map_chr(citing.matrix$first.author, clean.name)
 short.citing <- short.citing[!is.na(short.citing)]
 
@@ -226,21 +228,31 @@ write_csv(co.citation.edge.list, "data/processed/cocitation_edge_list.csv")
 
 # THIS IS THE CODE I USED TO GET THE NEW NAME CHANGE SPREADSHEET IN GOOGLE
 
-# cited.names <- as.data.frame(colnames(citing.matrix)[-1], stringsAsFactors = FALSE) 
-# cited.names$short.name <- cited.names$`colnames(citing.matrix)[-1]` %>% 
-#   map_chr(clean.name)
-# colnames(cited.names) <- c("name", "short.name")
-# citing.names <- as.data.frame(citing.matrix$first.author)
-# citing.names$short.name <- citing.names$`citing.matrix$first.author` %>% 
-#   map_chr(clean.name)
-# colnames(citing.names) <- c("name", "short.name")
-# all.names <- bind_rows(cited.names, citing.names) %>% 
-#   arrange(name)
-# current_name <- read_csv("current_names - current_names.csv", col_names = c("name", "short.name", "comment"), col_types = c("ccc"), skip = 1)
-# 
-# bind_rows(current_name, all.names) %>% 
-#   distinct() %>% 
-#   mutate(changed.in.old = ifelse(name %in% modified.authors$old.name, TRUE, FALSE),
-#          present.in.old = ifelse(name %in% current_name$name, TRUE, FALSE)) %>% 
-#   arrange(name) %>% 
-#   write_csv("new_name_changes.csv" )
+cited.names <- as.data.frame(colnames(citing.matrix)[-1], stringsAsFactors = FALSE)
+cited.names$short.name <- cited.names$`colnames(citing.matrix)[-1]` %>%
+  map_chr(clean.name)
+colnames(cited.names) <- c("name", "short.name")
+number.appearances.cited <- colSums(citing.matrix[,-1])
+cited.names <- add_column(cited.names, appearances = number.appearances.cited)
+
+citing.names <- as.data.frame(old.citing, stringsAsFactors = FALSE)
+citing.names$short.name <- old.citing %>%
+  map_chr(clean.name)
+colnames(citing.names) <- c("name", "short.name")
+number.appearances.citing <- rowSums(citing.matrix[,-1])
+citing.names <- add_column(citing.names, appearances = number.appearances.citing)
+
+all.names <- bind_rows(cited.names, citing.names) %>%
+  arrange(name) %>% 
+  group_by(name, short.name) %>% 
+  summarize(appearances = sum(appearances)) %>%
+  filter(!is.na(name))
+current_name <- read_csv("current_names - current_names.csv", col_names = c("name", "short.name", "comment"), col_types = c("ccc"), skip = 1) %>% 
+  select(-short.name)
+
+left_join(all.names, current_name) %>% 
+  arrange(name) %>% 
+  mutate(changed.in.old = ifelse(name %in% modified.authors$old.name, TRUE, FALSE),
+         present.in.old = ifelse(name %in% current_name$name, TRUE, FALSE)) %>%
+  arrange(name) %>%
+  write_csv("new_name_changes.csv" )
