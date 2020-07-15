@@ -1,0 +1,83 @@
+name,degree,strength,community,display.label
+Bobbio N,19,96,Paci,NA
+Paci E,38,210,Paci,NA
+Papi F,18,88,Paci,NA
+Preti G,20,104,Paci,NA
+Rossi P,19,100,Paci,NA
+Verra V,21,102,Paci,NA
+Banfi A,24,138,Paci,NA
+Piana G,38,214,Paci,NA
+Melandri E,13,60,Paci,NA
+Lanfredini R,15,78,Paci,NA
+San M,112,982,San,NA
+Garciabaro M,30,200,San,NA
+Ortegaygasset J,98,762,San,NA
+Rodriguez H,14,78,San,NA
+Apel K,38,220,San,NA
+Zubiri X,25,150,San,NA
+Serrano D,43,326,San,NA
+Hofmann H,19,104,San,NA
+Schapp W,57,354,San,NA
+Marias J,14,82,San,NA
+Husserl E,1295,23454,Husserl,Husserl E
+Lohmar D,244,2560,Husserl,NA
+Bernet R,299,3738,Husserl,Bernet R
+Biemel W,228,2600,Husserl,NA
+Cairns D,210,2084,Husserl,NA
+Fink E,255,3198,Husserl,Fink E
+Kern I,193,2018,Husserl,NA
+Landgrebe L,194,2254,Husserl,NA
+Melle U,182,2030,Husserl,NA
+Schuhmann K,338,3712,Husserl,NA
+Scheler M,264,2724,Brentano,Scheler M
+Ingarden R,208,1768,Brentano,NA
+Brentano F,302,3188,Brentano,Brentano F
+Mulligan K,163,1448,Brentano,NA
+Rollinger R,108,808,Brentano,NA
+Smith B,168,1478,Brentano,NA
+Stein E,142,1376,Brentano,NA
+Stumpf C,143,1120,Brentano,NA
+Reinach A,109,1024,Brentano,NA
+Frege G,133,1082,Brentano,NA
+Tieszen R,138,1064,Tieszen,NA
+Becker O,126,834,Tieszen,NA
+Leibniz G,112,676,Tieszen,NA
+Dummett M,121,834,Tieszen,NA
+Weyl H,121,798,Tieszen,NA
+Hilbert D,93,594,Tieszen,NA
+Quine W,122,834,Tieszen,NA
+Hintikka J,95,616,Tieszen,NA
+Godel K,87,624,Tieszen,NA
+Hartimo M,109,726,Tieszen,NA
+Sokolowski R,242,2862,Mohanty,NA
+Crowell S,144,1706,Mohanty,NA
+Drummond J,231,2804,Mohanty,NA
+Mohanty J,244,2608,Mohanty,NA
+Moran D,200,2178,Mohanty,Moran D
+Rinofnerkreidl S,85,680,Mohanty,NA
+Smith Dw,172,1708,Mohanty,NA
+Follesdal D,185,1680,Mohanty,NA
+Willard D,92,762,Mohanty,NA
+Simons P,82,566,Mohanty,NA
+Legge J,8,32,Mou,NA
+Ivanhoe P,11,60,Mou,NA
+Lu Y,13,56,Mou,NA
+Mou Z,14,78,Mou,NA
+Tu W,8,44,Mou,NA
+Wang Y,14,88,Mou,NA
+Slingerland E,7,28,Mou,NA
+Van N,7,28,Mou,NA
+Zhu X,12,60,Mou,NA
+Chan W,10,54,Mou,NA
+Mencius,7,32,Mou,NA
+Fingarette H,7,28,Mou,NA
+Natanson M,62,404,Spiegelberg,NA
+Embree L,93,780,Spiegelberg,NA
+Gurwitsch A,202,2026,Spiegelberg,Gurwitsch A
+Kockelmans J,45,292,Spiegelberg,NA
+Schutz A,200,1884,Spiegelberg,Schutz A
+Spiegelberg H,273,2578,Spiegelberg,Spiegelberg H
+Wagner H,48,316,Spiegelberg,NA
+Farber M,72,508,Spiegelberg,NA
+Edie J,51,336,Spiegelberg,NA
+Barber M,44,290,Spiegelberg,NA

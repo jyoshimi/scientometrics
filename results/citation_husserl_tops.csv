@@ -1,0 +1,116 @@
+name,degree,strength,community,display.label
+Moran D,63,81,Zahavi,Moran D
+Steinbock A,59,110,Zahavi,NA
+Sokolowski R,88,133,Zahavi,Sokolowski R
+Luft S,54,72,Zahavi,NA
+Zahavi D,148,217,Zahavi,Zahavi D
+Crowell S,54,76,Zahavi,NA
+Drummond J,81,138,Zahavi,NA
+Carr D,54,85,Zahavi,NA
+Farin I,53,64,Zahavi,NA
+Gurwitsch A,57,85,Zahavi,NA
+San M,35,62,Fink,NA
+Embree L,30,43,Fink,NA
+Orth E,18,23,Fink,NA
+Landgrebe L,73,97,Fink,NA
+Stroker E,40,43,Fink,NA
+Bruzina R,26,32,Fink,NA
+Iribarne J,18,32,Fink,NA
+Fink E,109,173,Fink,Fink E
+Cairns D,75,98,Fink,NA
+Leibniz G,22,32,Fink,NA
+Ortegaygasset J,29,45,Fink,NA
+Held K,76,87,Husserl,NA
+Lohmar D,79,106,Husserl,NA
+Boehm R,42,46,Husserl,NA
+Benoist J,42,48,Husserl,NA
+Husserl E,533,1937,Husserl,Husserl E
+Kern I,83,107,Husserl,NA
+Bernet R,118,172,Husserl,Bernet R
+Melle U,71,97,Husserl,NA
+Biemel W,95,126,Husserl,Biemel W
+Buch E,43,48,Husserl,NA
+Smith Dw,51,74,Brentano,NA
+Smith B,51,60,Brentano,NA
+Hopp W,21,31,Brentano,NA
+Follesdal D,52,67,Brentano,NA
+Brentano F,84,130,Brentano,Brentano F
+Hintikka J,21,29,Brentano,NA
+Dummett M,24,29,Brentano,NA
+Frege G,36,41,Brentano,NA
+Quine W,28,52,Brentano,NA
+Rinofnerkreidl S,21,36,Brentano,NA
+Simons P,23,26,Brentano,NA
+Mohanty J,83,116,Schuhmann,NA
+Schuhmann K,94,141,Schuhmann,NA
+Smid R,10,12,Schuhmann,NA
+Spiegelberg H,79,104,Schuhmann,Spiegelberg H
+Dewaelhens A,8,8,Schuhmann,NA
+Cho K,9,10,Schuhmann,NA
+Pietersma H,7,9,Schuhmann,NA
+Rombach H,7,16,Schuhmann,NA
+Berger G,8,10,Schuhmann,NA
+Farber M,20,30,Schuhmann,NA
+Natorp P,31,36,Schuhmann,NA
+Chrudzimski A,11,14,Ingarden,NA
+Miskiewicz W,4,7,Ingarden,NA
+Seron D,6,7,Ingarden,NA
+Wolenski J,4,8,Ingarden,NA
+Daniel M,4,4,Ingarden,NA
+Dewalque A,6,7,Ingarden,NA
+Fellmann F,7,9,Ingarden,NA
+Ingarden R,53,81,Ingarden,NA
+Kolakowski L,6,8,Ingarden,NA
+Lubbe H,7,7,Ingarden,NA
+Strohmeyer I,4,5,Ingarden,NA
+Tatarkiewicz W,4,5,Ingarden,NA
+Windelband W,9,10,Ingarden,NA
+Gonzalez J,2,8,Shigeru,NA
+Bayerova M,2,3,Shigeru,NA
+Chalupecky J,2,2,Shigeru,NA
+Didihuberman G,3,4,Shigeru,NA
+Golding J,2,2,Shigeru,NA
+Hobson A,2,2,Shigeru,NA
+Hyder D,3,3,Shigeru,NA
+Karul R,2,4,Shigeru,NA
+Mathauser Z,2,4,Shigeru,NA
+Pinotti A,3,4,Shigeru,NA
+Polanyi K,2,2,Shigeru,NA
+Radl E,2,2,Shigeru,NA
+Shigeru T,5,5,Shigeru,NA
+Strokerova E,2,2,Shigeru,NA
+Valdes E,2,3,Shigeru,NA
+Welter R,2,2,Shigeru,NA
+Jonkus D,3,5,Patzig,NA
+Hall H,2,2,Patzig,NA
+Brann E,3,3,Patzig,NA
+Drost M,2,2,Patzig,NA
+Flack P,2,2,Patzig,NA
+Haney K,3,4,Patzig,NA
+Holzey H,2,2,Patzig,NA
+Kraft J,3,3,Patzig,NA
+Namin L,2,2,Patzig,NA
+Patzig G,4,4,Patzig,NA
+Streminger G,2,2,Patzig,NA
+Warnock M,3,3,Patzig,NA
+Sepp H,29,35,Scheler,NA
+Mulligan K,41,55,Scheler,NA
+Geiger M,20,29,Scheler,NA
+Nenon T,33,41,Scheler,NA
+Hartmann N,20,24,Scheler,NA
+Pfander A,23,32,Scheler,NA
+Reinach A,38,52,Scheler,NA
+Scheler M,82,165,Scheler,Scheler M
+Stein E,51,78,Scheler,NA
+Stumpf C,29,43,Scheler,NA
+Wang H,13,20,Willard,NA
+Tieszen R,18,28,Willard,NA
+Hill C,15,21,Willard,NA
+Rollinger R,21,28,Willard,NA
+Becker O,25,33,Willard,NA
+Centrone S,14,16,Willard,NA
+Cohen H,13,15,Willard,NA
+Panzer U,21,21,Willard,NA
+Parsons C,13,22,Willard,NA
+Weyl H,18,34,Willard,NA
+Willard D,28,37,Willard,NA
