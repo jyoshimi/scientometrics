@@ -129,8 +129,8 @@ for(name in sort(colnames(citing.matrix)[-1])){
   # Loop through the names of the cited authors sorted alphabetically
   # Get short version of name
   short.name <- clean.name(name)
-  print(name)
-  print(short.name)
+  # print(name)
+  # print(short.name)
   # Sum old column with short name in new matrix. 
   # this ends up summing multiple versions of the same 
   # author in the same column on the new matrix 
@@ -219,6 +219,30 @@ co.citation.edge.list <- co.citation.matrix %>%
   gather("Target", "Weight", -Source) %>% 
   filter(Weight > 0)
 write_csv(co.citation.edge.list, "data/processed/cocitation_edge_list.csv")
+
+
+# Useful code snippets ------
+
+# Create a list of every cited author
+# write(sort(unique(colnames(citing.matrix.raw))), file = "~/Desktop/citedAuthors.txt")
+
+# See number of articles grabbed from each journal
+# raw.articles %>%  group_by(SO) %>% tally() %>% View()
+
+# Make sure we aren't getting Zahavi because of JCS. Can plug in gallagher too.
+# parsed.articles %>%
+#   filter(SO == "PHENOMENOLOGY AND THE COGNITIVE SCIENCES" & str_detect(CR_AU, "ZAHAVI")) %>%
+#   nrow()
+
+# See how often "phenomenology of spirit" is what was found
+# Results: Total: 189, Abstracts (AB): 113, Title (TI): 97,  Keywords (DE): 21
+# Note that there are 297 citing authors in the "Hegel cluster"
+# PS = "PHENOMENOLOGY OF SPIRIT|PHENOMENOLOGY OF MIND|DES GEISTES"
+# hegel.folks <- parsed.articles %>%
+#   filter(str_detect(AB, PS) | str_detect(TI, PS) | str_detect(DE, PS))
+#   # .$AU %>%  unique()
+# nrow(hegel.folks)
+# View(hegel.folks) # Peruse titles and references. Suggests this really is a mainly Hegel discussion
 
 
 

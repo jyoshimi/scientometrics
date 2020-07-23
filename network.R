@@ -6,6 +6,7 @@ library(Matrix)
 # This package is used in the ggplot statements.
 library(pals)
 
+# Main functions to use in analyzing citation and co-citation networks
 
 analyze.network <- function(object, target.author = NULL, 
                             directed = FALSE, threshold = 0.01, 
@@ -14,7 +15,8 @@ analyze.network <- function(object, target.author = NULL,
   # Function for analyzing an edge list OR network object. If provided with an
   # edge list, the network is built during the procedure. If provided with an
   # already constructed network, a sub-network is induced.
-  # Can use different community algorithms and layout algorithms. Communities have the name of its highest (in if directed) degree author  
+  # Can use different community algorithms and layout algorithms. Communities have 
+  # the name of its highest (in if directed) degree author  
   # Input:    `object`: either an edge list (as data frame) OR igraph network.
   #             If igraph network, `target.author` is required. Provided igraph needs a
   #             `community` and a `name` attribute to work.
@@ -167,7 +169,8 @@ analyze.network <- function(object, target.author = NULL,
   # Built network visualization
   # Only display the labels for the top members of each community
   display.labels <- map_chr(V(network)$name, function(name){
-    ifelse(name %in% unique(top.members$name), name, NA)
+    # TODO: The blank string will create a problem for GGPlot
+    ifelse(name %in% unique(top.members$name), name, "")
   })
   V(network)$display.label <- display.labels
   
@@ -211,11 +214,12 @@ write.results <- function(network, network.name){
   write_csv(x = network$net.top, path = paste0("results/", network.name, "_tops", ".csv"))
   
   # write gephi
-  write_graph(network$network.object, file = paste0("files_for_gephi/", network.name, "_gephi.", format = "graphml"))
+  write_graph(network$network.object, file = paste0("gephi/", network.name, ".graphml"), format = "graphml")
   
   # write plot
-  ggsave(plot = network$visualization, paste0("figures/", network.name, ".pdf"), height = 14, width = 14, units = "in", dpi = 500)
-  ggsave(plot = network$visualization, paste0("figures/", network.name, ".png"), height = 14, width = 14, units = "in", dpi = 500)
+  # TODO: Fix display labels; see around line 170 
+  # ggsave(plot = network$visualization, paste0("figures/", network.name, ".pdf"), height = 14, width = 14, units = "in", dpi = 500)
+  # ggsave(plot = network$visualization, paste0("figures/", network.name, ".png"), height = 14, width = 14, units = "in", dpi = 500)
 }
 
 
