@@ -1,6 +1,8 @@
 MAIN GRAPH 
 
-- Open the .graphml file produced by the R analysis file. Use defaults to import.
+- File > Open...
+	- Open the .graphml file produced by the R analysis file. 
+	- Use defaults to import.
 
 - Data Laboratory Tab
 
@@ -16,7 +18,7 @@ MAIN GRAPH
 	
 	- Appearance > Nodes > Size > Unique > 5
 
-	- Appearance > Nodes > Partition > "Community"
+	- Appearance > Nodes > Color > Partition > "Community"
 		- Adjust palette to your liking 
 		- Palette > Generate... > Uncheck limit colors 
 		
