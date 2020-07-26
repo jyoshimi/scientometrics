@@ -156,8 +156,6 @@ citing.matrix.clean <- citing.matrix.clean[,sort(colnames(citing.matrix.clean))]
 
 # Save for co-citation before consolidating citing authors
 co.citation.matrix <- citing.matrix.clean
-# Remove raw citing for memory
-rm(citing.matrix)
 
 citing.matrix.clean <- as_tibble(citing.matrix.clean) %>% 
   add_column(first.author = rownames(citing.matrix.clean))
@@ -239,8 +237,9 @@ citing.names <- as.data.frame(old.citing, stringsAsFactors = FALSE)
 citing.names$short.name <- old.citing %>%
   map_chr(clean.name)
 colnames(citing.names) <- c("name", "short.name")
-number.appearances.citing <- rowSums(citing.matrix[,-1])
-citing.names <- add_column(citing.names, appearances = number.appearances.citing)
+citing.names <- citing.names %>% 
+  group_by(name) %>% 
+  summarize(appearances = n())
 
 all.names <- bind_rows(cited.names, citing.names) %>%
   arrange(name) %>% 
@@ -256,3 +255,6 @@ left_join(all.names, current_name) %>%
          present.in.old = ifelse(name %in% current_name$name, TRUE, FALSE)) %>%
   arrange(name) %>%
   write_csv("new_name_changes.csv" )
+
+# Useful for looking for cited/citing authors in name fixing
+parsed.articles %>% write_csv("references.csv")
