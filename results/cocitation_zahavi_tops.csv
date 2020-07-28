@@ -1,89 +1,98 @@
 name,degree,strength,community,display.label
-Gallagher S,660,7598,Gallagher,Gallagher S
-Sheetsjohnstone M,138,1118,Gallagher,NA
-Ratcliffe M,187,1802,Gallagher,Ratcliffe M
-Sutton J,67,418,Gallagher,NA
-Fuchs T,227,2164,Gallagher,Fuchs T
-Leder D,55,408,Gallagher,NA
-Svenaeus F,50,354,Gallagher,NA
-Colombetti G,115,960,Gallagher,NA
-Legrand D,106,760,Gallagher,NA
-Montero B,50,322,Gallagher,NA
-Gallese V,169,1314,Gallese,NA
-Baroncohen S,108,718,Gallese,NA
-Gordon R,102,700,Gallese,NA
-Krueger J,146,1010,Gallese,NA
-Reddy V,139,1086,Gallese,NA
-Dejaegher H,168,1474,Gallese,NA
-Tomasello M,150,1092,Gallese,NA
-Meltzoff A,127,924,Gallese,NA
-Stern D,138,1074,Gallese,NA
-Trevarthen C,118,922,Gallese,NA
-Clark A,328,2954,Clark,Clark A
-Noe A,313,3274,Clark,Noe A
-Gibson J,194,1724,Clark,Gibson J
-Hurley S,99,730,Clark,NA
-Wheeler M,125,1030,Clark,NA
-Oregan J,111,906,Clark,NA
-Froese T,140,1142,Clark,NA
-Dipaolo E,117,1048,Clark,NA
-Hutto D,145,1220,Clark,NA
-Maturana H,96,846,Clark,NA
-Bechtel W,39,190,Lakoff,NA
-Chapman S,24,96,Lakoff,NA
-Cona G,24,96,Lakoff,NA
-Engel A,31,148,Lakoff,NA
-Fiori S,24,96,Lakoff,NA
-Held R,24,104,Lakoff,NA
-Kulick J,24,96,Lakoff,NA
-Lakoff G,71,418,Lakoff,NA
-Little D,24,96,Lakoff,NA
-Majewska A,24,96,Lakoff,NA
-Morris D,48,288,Lakoff,NA
-Munte T,24,98,Lakoff,NA
-Richter W,24,96,Lakoff,NA
-Singer T,24,102,Lakoff,NA
-Singer W,29,134,Lakoff,NA
-Urgen B,24,96,Lakoff,NA
-Allen M,25,108,Lakoff,NA
-Dreyfus H,302,3158,Zahavi,Dreyfus H
-Zahavi D,477,5544,Zahavi,Zahavi D
-Haugeland J,55,416,Zahavi,NA
-Ganeri J,44,292,Zahavi,NA
-Garfield J,42,236,Zahavi,NA
-Siderits M,49,298,Zahavi,NA
-Carman T,63,570,Zahavi,NA
-Kelly S,56,436,Zahavi,NA
-Baker L,36,198,Zahavi,NA
-Romdenhromluc K,35,240,Zahavi,NA
-Dewey J,91,616,Dewey,NA
-Peirce C,78,502,Dewey,NA
-Colapietro V,22,116,Dewey,NA
-Noth W,20,96,Dewey,NA
-Darwin C,29,150,Dewey,NA
-Deely J,22,114,Dewey,NA
-Stjernfelt F,23,114,Dewey,NA
-Von F,22,104,Dewey,NA
-Bateson G,25,144,Dewey,NA
-Rosenthal S,20,98,Dewey,NA
-Christoff K,55,294,Damasio,NA
-Metzinger T,131,938,Damasio,NA
-Damasio A,182,1498,Damasio,NA
-Johnson M,65,408,Damasio,NA
-Blanke O,48,266,Damasio,NA
-Ramachandran V,47,284,Damasio,NA
-Laberge S,48,246,Damasio,NA
-Hobson J,54,298,Damasio,NA
-Revonsuo A,49,264,Damasio,NA
-Windt J,48,256,Damasio,NA
-Thompson E,412,4296,Varela,Thompson E
-Varela F,462,4848,Varela,Varela F
-Depraz N,133,1326,Varela,NA
-Van M,49,336,Varela,NA
-Petitmengin C,120,1076,Varela,NA
-Vermersch P,71,568,Varela,NA
-Petitot J,81,720,Varela,NA
-Lutz A,114,1012,Varela,NA
-Bitbol M,62,460,Varela,NA
-Levanquyen M,49,332,Varela,NA
-Roy J,78,570,Varela,NA
+Thompson E,407,4212,Varela,Thompson E
+Varela F,450,4742,Varela,Varela F
+Depraz N,125,1258,Varela,
+Petitmengin C,116,1038,Varela,
+Vermersch P,67,538,Varela,
+Petitot J,77,702,Varela,
+Froese T,135,1098,Varela,
+Lutz A,113,998,Varela,
+Bitbol M,59,446,Varela,
+Roy J,77,566,Varela,
+Gallese V,168,1296,Gallese,
+Baroncohen S,107,708,Gallese,
+Krueger J,144,986,Gallese,
+Reddy V,138,1082,Gallese,
+Dejaegher H,166,1428,Gallese,
+Hutto D,141,1186,Gallese,
+Tomasello M,148,1076,Gallese,
+Meltzoff A,127,910,Gallese,
+Stern D,132,1018,Gallese,
+Trevarthen C,116,894,Gallese,
+Dreyfus H,305,3154,Dreyfus,Dreyfus H
+Haugeland J,54,408,Dreyfus,
+Ganeri J,43,286,Dreyfus,
+Garfield J,43,244,Dreyfus,
+Siderits M,49,296,Dreyfus,
+Carman T,61,562,Dreyfus,
+Kelly S,56,436,Dreyfus,
+Baker L,37,202,Dreyfus,
+Rouse J,34,212,Dreyfus,
+Romdenhromluc K,34,238,Dreyfus,
+Bechtel W,39,190,Morris,
+Chapman S,24,96,Morris,
+Cona G,24,96,Morris,
+Engel A,31,148,Morris,
+Fiori S,24,96,Morris,
+Held R,24,104,Morris,
+Kulick J,24,96,Morris,
+Little D,24,96,Morris,
+Majewska A,24,96,Morris,
+Morris D,47,282,Morris,
+Munte T,24,98,Morris,
+Richter W,24,96,Morris,
+Singer T,24,102,Morris,
+Singer W,29,134,Morris,
+Urgen B,24,96,Morris,
+Allen M,25,108,Morris,
+Clark A,324,2930,Clark,Clark A
+Noe A,310,3244,Clark,Noe A
+Gibson J,195,1720,Clark,Gibson J
+Hurley S,98,724,Clark,
+Rowlands M,91,626,Clark,
+Wheeler M,126,1020,Clark,
+Oregan J,109,892,Clark,
+Lakoff G,105,660,Clark,
+Dipaolo E,116,1026,Clark,
+Maturana H,94,830,Clark,
+Gallagher S,642,7406,Gallagher,Gallagher S
+Sheetsjohnstone M,132,1060,Gallagher,
+Zahavi D,455,5354,Gallagher,Zahavi D
+Ratcliffe M,175,1640,Gallagher,Ratcliffe M
+Sutton J,66,412,Gallagher,
+Leder D,54,394,Gallagher,
+Devignemont F,78,550,Gallagher,
+Colombetti G,114,936,Gallagher,
+Legrand D,99,714,Gallagher,
+Montero B,49,318,Gallagher,
+Ilundainagurruza J,11,44,Watsuji,
+Krein K,11,44,Watsuji,
+Takuan S,11,44,Watsuji,
+Tokitsu K,11,44,Watsuji,
+Watsuji T,16,74,Watsuji,
+Yamamoto T,11,44,Watsuji,
+Yuasa Y,16,72,Watsuji,
+Breivik G,13,56,Watsuji,
+Nagatomo S,3,12,Watsuji,
+Maraldo J,3,12,Watsuji,
+Shields J,3,12,Watsuji,
+Christoff K,55,294,Damasio,
+Metzinger T,131,932,Damasio,
+Damasio A,180,1478,Damasio,Damasio A
+Blanke O,47,262,Damasio,
+Ramachandran V,46,282,Damasio,
+Friston K,42,258,Damasio,
+Laberge S,48,246,Damasio,
+Hobson J,54,298,Damasio,
+Revonsuo A,49,264,Damasio,
+Windt J,48,256,Damasio,
+Bratman M,91,566,Bratman,
+Gilbert M,59,400,Bratman,
+Rizzolatti G,68,454,Bratman,
+Schmid H,70,476,Bratman,
+Walther G,25,134,Bratman,
+Chartrand T,28,122,Bratman,
+Leon F,25,154,Bratman,
+Miles L,18,76,Bratman,
+Tollefsen D,34,198,Bratman,
+Tuomela R,37,222,Bratman,

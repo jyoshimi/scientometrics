@@ -1,57 +1,52 @@
 name,degree,strength,community,display.label
-Kenny A,47,388,Kenny,Kenny A
-Neu J,6,26,Kenny,NA
-Brudholm T,5,20,Kenny,NA
-Elster J,22,142,Kenny,NA
-Green O,12,56,Kenny,NA
-Hadreas P,5,24,Kenny,NA
-Kolnai A,19,110,Kenny,NA
-Landweer H,7,30,Kenny,NA
-Marks J,13,76,Kenny,NA
-Vendrell F,14,76,Kenny,NA
-Benzeev A,20,132,Kenny,NA
-Griffiths P,52,406,Solomon,Griffiths P
-Solomon R,96,884,Solomon,Solomon R
-Goldie P,91,844,Solomon,Goldie P
-Frijda N,47,358,Solomon,Frijda N
-Scherer K,34,214,Solomon,NA
-Ellsworth P,17,84,Solomon,NA
-Lazarus R,43,320,Solomon,NA
-Ledoux J,28,210,Solomon,NA
-Russell J,19,78,Solomon,NA
-Ekman P,28,184,Solomon,NA
-Barrie T,10,40,Brampton,NA
-Gaita R,10,40,Brampton,NA
-Horrell D,10,40,Brampton,NA
-Jones L,10,40,Brampton,NA
-Newman J,10,40,Brampton,NA
-Paul I,10,40,Brampton,NA
-Pickard H,10,44,Brampton,NA
-Ratzsch D,10,40,Brampton,NA
-Sapir E,10,40,Brampton,NA
-Brampton S,11,50,Brampton,NA
-Desousa R,59,572,Desousa,Desousa R
-Roberts R,52,434,Desousa,Roberts R
-Deonna J,48,406,Desousa,Deonna J
-Lyons W,32,236,Desousa,Lyons W
-Darms J,35,280,Desousa,NA
-Doring S,34,272,Desousa,NA
-Tappolet C,40,348,Desousa,NA
-Deigh J,31,194,Desousa,NA
-Helm B,36,240,Desousa,NA
-Brady M,34,260,Desousa,NA
-Nussbaum M,69,598,Nussbaum,Nussbaum M
-Calhoun C,10,44,Nussbaum,NA
-Zagzebski L,10,44,Nussbaum,NA
-Robinson J,12,52,Nussbaum,NA
-Taylor G,8,36,Nussbaum,NA
-Stocker M,32,200,Nussbaum,NA
-Greenspan P,31,216,Nussbaum,NA
-Pugmire D,18,90,Nussbaum,NA
-Marmor A,6,24,Nussbaum,NA
-James H,7,30,Nussbaum,NA
-Strevens M,4,16,Trout,NA
-Trout J,5,20,Trout,NA
-Khalifa K,4,16,Trout,NA
-Kvanvig J,4,16,Trout,NA
-Grimm S,4,16,Trout,NA
+Lewis H,5,22,Lewis,
+Tangney J,5,22,Lewis,
+Benedict R,3,12,Lewis,
+Scheff T,2,8,Lewis,
+Griffiths P,53,412,Solomon,Griffiths P
+Solomon R,93,878,Solomon,Solomon R
+Frijda N,46,358,Solomon,Frijda N
+Scherer K,34,216,Solomon,
+Ellsworth P,17,86,Solomon,
+Lazarus R,42,318,Solomon,
+Ledoux J,38,274,Solomon,
+Izard C,15,90,Solomon,
+Ekman P,28,184,Solomon,
+Schorr A,18,96,Solomon,
+Goldie P,90,850,Goldie,Goldie P
+Barrie T,10,40,Goldie,
+Gaita R,10,40,Goldie,
+Horrell D,10,40,Goldie,
+John Paul Ii,10,42,Goldie,
+Jones L,10,40,Goldie,
+Newman J,10,40,Goldie,
+Pickard H,10,44,Goldie,
+Ratzsch D,10,40,Goldie,
+Sapir E,10,40,Goldie,
+Brampton S,11,50,Goldie,
+Nussbaum M,72,674,Nussbaum,Nussbaum M
+Kenny A,45,374,Nussbaum,Kenny A
+Robinson J,20,96,Nussbaum,
+Deigh J,32,200,Nussbaum,
+Russell J,20,82,Nussbaum,
+Stocker M,32,204,Nussbaum,
+Elster J,18,118,Nussbaum,
+Pugmire D,18,92,Nussbaum,
+Lambie J,17,78,Nussbaum,
+Benzeev A,16,112,Nussbaum,
+Charland L,16,92,Nussbaum,
+Desousa R,56,562,Desousa,Desousa R
+Roberts R,49,428,Desousa,Roberts R
+Deonna J,47,406,Desousa,Deonna J
+Lyons W,31,236,Desousa,Lyons W
+Darms J,35,282,Desousa,
+Doring S,34,276,Desousa,
+Tappolet C,38,340,Desousa,
+Greenspan P,31,218,Desousa,
+Helm B,36,242,Desousa,
+Brady M,34,262,Desousa,
+Strevens M,4,16,Trout,
+Trout J,5,20,Trout,
+Khalifa K,4,16,Trout,
+Kvanvig J,4,16,Trout,
+Grimm S,4,16,Trout,

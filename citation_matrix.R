@@ -8,8 +8,9 @@ library('tidyverse')
 # Functions ----
 
 # Load the manual name change document, used by clean.name function
-modified.authors <- read_csv(file = "data/processed/name_changes.csv") %>% 
-  select(old.name = `OLD NAME`, new.name = `NEW NAME ("NA" to Delete)`)
+modified.authors <- read_csv(file = "data/processed/name_changes.csv",
+                             col_names = c("old.name", "new.name", "comment")) %>% 
+  select(-comment)
 
 # Function to clean up names, by shortening them and handling special cases in a manual
 # name change document (name_changes.csv). This ensures multiple instances of a name
@@ -34,18 +35,25 @@ clean.name <- function(x) {
     return(NA)
   }
   if(x == "NA"){return(NA)}
-  # Manual name changes.  
-  # if(x %in% modified.authors$old.name){
-  #   name.ind <- which(modified.authors$old.name == x)
-  #   # print(x)s
-  #   return(modified.authors$new.name[name.ind])
-  # }
-  # else{
+  # Manual name changes.
+  if(x %in% modified.authors$old.name){
+    name.ind <- which(modified.authors$old.name == x)
+    # print(x)
+    changed.name <- modified.authors$new.name[name.ind]
+    return(changed.name)
+  }
+  else{
     # The main algorithm applied to all authors Special cases are above.
     # Extracts the longest string followed by a space and then the
     # first letter of the next string
-    return(str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}"))
-  # }
+    if(str_detect(x, "[:space:]{2,}")){
+      print(x)
+      x <- str_replace_all(string = x, pattern = "[:space:]+", replacement = " ") # Replace any double spaces
+      print(x)
+    }
+    short.name <- str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}")
+    return(short.name)
+  }
 }
 
 # Load and parse articles ------
@@ -247,38 +255,40 @@ write_csv(co.citation.edge.list, "data/processed/cocitation_edge_list.csv")
 
 
 # TEMPORARY ----
-
-# THIS IS THE CODE I USED TO GET THE NEW NAME CHANGE SPREADSHEET IN GOOGLE
-
-cited.names <- as.data.frame(colnames(citing.matrix)[-1], stringsAsFactors = FALSE)
-cited.names$short.name <- cited.names$`colnames(citing.matrix)[-1]` %>%
-  map_chr(clean.name)
-colnames(cited.names) <- c("name", "short.name")
-number.appearances.cited <- colSums(citing.matrix[,-1])
-cited.names <- add_column(cited.names, appearances = number.appearances.cited)
-
-citing.names <- as.data.frame(old.citing, stringsAsFactors = FALSE)
-citing.names$short.name <- old.citing %>%
-  map_chr(clean.name)
-colnames(citing.names) <- c("name", "short.name")
-citing.names <- citing.names %>% 
-  group_by(name) %>% 
-  summarize(appearances = n())
-
-all.names <- bind_rows(cited.names, citing.names) %>%
-  arrange(name) %>% 
-  group_by(name, short.name) %>% 
-  summarize(appearances = sum(appearances)) %>%
-  filter(!is.na(name))
-current_name <- read_csv("current_names - current_names.csv", col_names = c("name", "short.name", "comment"), col_types = c("ccc"), skip = 1) %>% 
-  select(-short.name)
-
-left_join(all.names, current_name) %>% 
-  arrange(name) %>% 
-  mutate(changed.in.old = ifelse(name %in% modified.authors$old.name, TRUE, FALSE),
-         present.in.old = ifelse(name %in% current_name$name, TRUE, FALSE)) %>%
-  arrange(name) %>%
-  write_csv("new_name_changes.csv" )
-
-# Useful for looking for cited/citing authors in name fixing
-parsed.articles %>% write_csv("references.csv")
+# 
+# # THIS IS THE CODE I USED TO GET THE NEW NAME CHANGE SPREADSHEET IN GOOGLE
+# 
+# cited.names <- as.data.frame(colnames(citing.matrix)[-1], stringsAsFactors = FALSE)
+# cited.names$short.name <- cited.names$`colnames(citing.matrix)[-1]` %>%
+#   map_chr(clean.name)
+# colnames(cited.names) <- c("name", "short.name")
+# number.appearances.cited <- colSums(citing.matrix[,-1])
+# cited.names <- add_column(cited.names, appearances = number.appearances.cited)
+# 
+# citing.names <- as.data.frame(old.citing, stringsAsFactors = FALSE)
+# citing.names$short.name <- old.citing %>%
+#   map_chr(clean.name)
+# colnames(citing.names) <- c("name", "short.name")
+# citing.names <- citing.names %>% 
+#   group_by(name) %>% 
+#   summarize(appearances = n())
+# 
+# all.names <- bind_rows(cited.names, citing.names) %>%
+#   arrange(name) %>% 
+#   group_by(name) %>% 
+#   summarize(appearances = sum(appearances)) %>%
+#   filter(!is.na(name))
+# current_name <- read_csv("current_names - current_names.csv", col_names = c("name", "short.name", "comment"), col_types = c("ccc"), skip = 1) %>% 
+#   select(-short.name)
+# 
+# left_join(all.names, current_name) %>% 
+#   arrange(name) %>% 
+#   mutate(changed.in.old = ifelse(name %in% modified.authors$old.name, TRUE, FALSE),
+#          present.in.old = ifelse(name %in% current_name$name, TRUE, FALSE)) %>% 
+#   add_column(short.name = map_chr(.$name, clean.name)) %>% 
+#   select(name, short.name, everything()) %>% 
+#   arrange(name) %>%
+#   write_csv("new_name_changes.csv" )
+# 
+# # Useful for looking for cited/citing authors in name fixing
+# parsed.articles %>% write_csv("references.csv")

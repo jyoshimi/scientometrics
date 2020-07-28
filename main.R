@@ -33,15 +33,15 @@ write.results(network = cit.net, network.name = "citation_complete")
 
 # Create and analyze sub-networks
 
-husserl.cit.net <- analyze.network(object = cit.net$network.object, target.author = "Husserl E", directed = TRUE)
+husserl.cit.net <- analyze.network(object = cit.net$network.object, target.author = "Husserl E", directed = TRUE, n.top = 5)
 husserl.cit.net$visualization
 write.results(network = husserl.cit.net, network.name = "citation_husserl")
 
-merleauponty.cit.net <- analyze.network(object = cit.net$network.object, target.author = "Merleauponty M", directed = TRUE)
+merleauponty.cit.net <- analyze.network(object = cit.net$network.object, target.author = "Merleauponty M", directed = TRUE, n.top = 5)
 merleauponty.cit.net$visualization
 write.results(network = merleauponty.cit.net, network.name = "citation_mp")
 
-heidegger.cit.net <- analyze.network(object = cit.net$network.object, target.author = "Heidegger M", directed = TRUE)
+heidegger.cit.net <- analyze.network(object = cit.net$network.object, target.author = "Heidegger M", directed = TRUE, n.top = 5)
 heidegger.cit.net$visualization
 write.results(network = heidegger.cit.net, network.name = "citation_heidegger")
 
