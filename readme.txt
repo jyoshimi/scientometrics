@@ -2,6 +2,15 @@ SETTING UP A PROJECT
 
 After cloning this directory we suggest you set up a project using RSTudio > New Project > Existing Director
 
+R FILES
+
+Main analysis script is main.R.  
+
+Functions for analysis are in network.R
+
+citation_matrix.R is used to parse and analyze the raw citations and produce an edge list. 
+
+
 DIRECTORY CONTENTS
 
 Edge lists
@@ -16,11 +25,6 @@ GETTING THE DATA
 
 For information how the code is downloaded and cleaned up, see the code comments in citation_matrix_WOS.r.  Also the discussion of getting the data from web of science.
 
-ANALZYING THE DATA
-
-Main analysis script is network_R.R.  Uses igraph for community detection and tidygraph to plot.
-
-Efforts in python, ipynb, and gephi also included, but not used
 
 GETTING DATA FROM WEB OF SCIENCE
 
@@ -74,3 +78,13 @@ all.names <- c(colnames(citing.matrix.raw), citing.matrix.raw$first.author) %>%
   arrange(old.name) %>% 
   filter(str_detect(old.name, "[[:digit:]]", negate = TRUE))
 write_csv(all.names, "current_names.csv")
+
+
+DOWNLOADING NAME CHANGE DOCUMENT
+
+Save the name changes tab as data/processed/name_changes.csv.  
+
+Used by citation_matrix.R
+
+
+
