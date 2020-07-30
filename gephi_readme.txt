@@ -4,11 +4,11 @@ MAIN GRAPH
 	- Open the .graphml file produced by the R analysis file. 
 	- Use defaults to import.
 
-- Data Laboratory Tab
 
+- Edit labels (Not needed initially)
+	- Data Laboratory Tab
 	- Edit the display_label field to your liking. 
 		- Don't use too many labels. They get unruly.
-
 	- Copy display_label to label since the preview tab uses it
 		- "Copy data to other column" > display_label > Select "label"
 
@@ -18,14 +18,21 @@ MAIN GRAPH
 	
 	- Appearance > Nodes > Size > Unique > 5
 
+	- Use display label as label (alternative to "Edit labels" for initial tuning)
+		- Click attributes button at bottom-right of main graph window
+		- Select display.label and unselect all other boxes
+
 	- Appearance > Nodes > Color > Partition > "Community"
 		- Adjust palette to your liking 
 		- Palette > Generate... > Uncheck limit colors 
 		
 	- Layout  
 		Choice 1: Layout > Force Atlas 2
-		Choice 2: Layout > OpenOrd (suggest setting a random seed of eg. 1)
-		
+		Choice 2: Layout > OpenOrd (suggest setting a random seed. Current graph uses seed of 3)
+			Custom settings for open-ord to try
+				a. In Stages": 25, 25, 25, 5, 20.
+				b. In "OpenOrd": unchanged, unchanged, 1000, 0.2, 3.
+
 	- Label display
 		- Click Show Node Labels button at bottom
 		- Appearance > Label Size > Ranking > Degree or Strength 
@@ -36,7 +43,9 @@ MAIN GRAPH
 		- Layout > Label Adjust to get the labels not to overlap
 
 - Preview tab
-	- Node labels > show labels: checked
+	- (For labels to show up here, "Edit labels" step above required. An alternative to export with no labels and then to edit png directly. Svg too large to deal with.)
+	- Nodes: can set border width to 0 and opacity > 70
+	- Node labels > show labels: checked 
 	- Node labels > proportional size: checked
 	- Node labels > color: custom > black
 	- Node labels > outline opacity > 0
@@ -56,36 +65,35 @@ GROUP-BASED NETWORK
 	Groups by partition
 		https://gephi.org/plugins/#/plugin/group-partition-gephi-plugin
 
-- Make sure the main graph is open in a workspace
+- Stuff in main graph
+	- First in the large network, copy community name to label
+	- Be sure all communities you want are colored how you want them. Only communities with colors are grouped and sent over.
 
 - Tools > Generate groups by partition > Create new workspace
 
+- Get rid of self loops using the filter in overview, then create a new network
+
 - Data Laboratory Tab
-	- The size field corresponds to the size field in community_stats.csv.  	
-	- Match size to size in community_stats.csv and use this to hand set the labels to "Husserl", "Heidegger", etc.
-	- Manually remove remaining nodes from the table
-	- Manually remove self-connections
-	- Edges > Copy size to label
+	- Manully update labels
+	- Remove unwanted nodes
+	- Copy edge weights to edge label
 
 - Overview Tab
 	- Appearance > Nodes > Size > Ranking > Size. Min 50 / Max 100
-	- Appearance > Nodes > Color > Partition > Size (Pastel palette)
 	- Appearance > Nodes > Text > Size > Unique > .5
-	- Appearance > Edges > Text > Sizes > Min 5 / Max 10
+	- Appearance > Edges > Text > 	Sizes > Min 5 / Max 10
 	- Layout > circular layout
+		- Fixed diameter: checked
 		- Diamter: 1000
-	- Random layout
-		- Space Size: 1500
 
 - Preview tab 
 	- Node labels > Show labels: checked
-	- Node labels > Font size: 48
+	- Node labels > Font size: 60, Bold
 	- Node labels > Proportional size: unchecked
-	- Node labels > Outline size: 5
 	- Edges > thickness: 0.1
 	- Edges > Rescale weight: checked
 	- Edges > Min rescaled weight: 10
-	- Edges > Max rescaled weight: 100
+	- Edges > Max rescaled weight: 500
 	- Edges > Edge color: Source
 	- Edges > Opacity: 40
 	- Edge Labels > Show labels: checked

@@ -1,3 +1,5 @@
+## HERE FOR BACKUP UNTIL FUNCTIONS.R IS FINISHED. DELETE THIS WHEN DONE
+
 library(tidyverse)
 library(igraph)
 library(ggraph)
@@ -164,7 +166,8 @@ analyze.network <- function(object, target.author = NULL,
   top.members <- net.df %>% 
     group_by(community) %>% 
     top_n(n.top, degree) %>% 
-    arrange(community)
+    arrange(community) %>% 
+    sort(strength())
   
   # Built network visualization
   # Only display the labels for the top members of each community
