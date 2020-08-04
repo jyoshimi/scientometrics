@@ -223,3 +223,4 @@ co.citation.edge.list <- co.citation.matrix %>%
   gather("Target", "Weight", -Source) %>% 
   filter(Weight > 0)
 write_csv(co.citation.edge.list, "data/processed/cocitation_edge_list.csv")
+

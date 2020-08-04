@@ -216,6 +216,7 @@ write.tops <- function(network, network.name, n.top=10, n.filter = 20){
     group_by(community) %>%
     mutate(mx = max(strength)) %>% 
     arrange(desc(mx), desc(strength)) %>% 
+    select(-mx) %>% 
     top_n(n.top, strength)
   
   # Write top members
