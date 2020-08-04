@@ -61,7 +61,7 @@ co.citation.edges <- read_csv('data/processed/cocitation_edge_list.csv') %>%
 
 # Build co-citation network
 
-coc.net <- build.network(object = co.citation.edges,layout.function = layout_with_drl, options = drl_defaults$default)
+coc.net <- build.network(object = co.citation.edges, directed = FALSE)
 coc.net$visualization
 coc.net$stats
 coc.net$net.top

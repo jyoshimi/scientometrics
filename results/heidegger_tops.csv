@@ -1,56 +1,40 @@
 name,degree,strength,community
-Heidegger M,465,892,Heidegger
-Kisiel T,45,66,Heidegger
-Aristotle,42,44,Heidegger
-Poggeler O,29,38,Heidegger
-Dastur F,31,34,Heidegger
-Sheehan T,28,31,Heidegger
-Von H,26,31,Heidegger
-Heidegger,29,30,Heidegger
-Dahlstrom D,22,27,Heidegger
-Aristoteles,23,27,Heidegger
-
-Marion J,159,340,Marion
-Janicaud D,76,98,Marion
+Heidegger M,473,962,Heidegger
+Aristotle,70,91,Heidegger
+Kisiel T,47,68,Heidegger
+Vonherrmann F,31,45,Heidegger
+Poggeler O,30,39,Heidegger
+Dastur F,34,38,Heidegger
+Sheehan T,27,30,Heidegger
+Figal G,23,27,Heidegger
+Vanburen J,21,27,Heidegger
+Dahlstrom D,21,26,Heidegger
+Levinas E,194,352,Levinas
+Plato,51,57,Levinas
+Franck D,25,32,Levinas
+Marion J,155,345,Marion
+Janicaud D,76,99,Marion
 Caputo J,55,79,Marion
-Kierkegaard S,43,55,Marion
-Chretien J,34,47,Marion
-Lacoste J,23,36,Marion
-Kearney R,25,33,Marion
-Blanchot M,25,28,Marion
-
-Levinas E,192,337,Levinas
-Descartes R,57,67,Levinas
-Plato,37,39,Levinas
-Franck D,28,35,Levinas
-
-Derrida J,188,307,Derrida
-Nancy J,31,59,Derrida
-Badiou A,29,35,Derrida
-Benjamin W,23,32,Derrida
-Lawlor L,23,25,Derrida
-Critchley S,24,25,Derrida
-
-Anonymous,196,262,Anonymous
-Richir M,55,145,Anonymous
-Tengelyi L,29,34,Anonymous
-Maldiney H,21,31,Anonymous
-
-Ricoeur P,159,253,Ricoeur
-Gadamer H,105,154,Ricoeur
-Grondin J,31,46,Ricoeur
-Romano C,29,41,Ricoeur
-Henry M,124,246,Henry
-Courtine J,46,55,Henry
-Greisch J,36,49,Henry
-Martin H,25,26,Henry
-
-Patocka J,68,136,Patocka
-Ricceur P,22,26,Patocka
-
-Nietzsche F,85,113,Nietzsche
-
-Arendt H,47,81,Arendt
-Taminiaux J,25,30,Arendt
-Agamben G,37,43,Agamben
-Rorty R,23,27,Agamben
+Chretien J,35,50,Marion
+Augustine,33,40,Marion
+Romano C,26,39,Marion
+Kearney R,23,31,Marion
+Derrida J,192,322,Derrida
+Nancy J,27,53,Derrida
+Blanchot M,26,29,Derrida
+Lawlor L,21,25,Derrida
+Critchley S,23,24,Derrida
+Ricoeur P,168,294,Ricoeur
+Greisch J,33,45,Ricoeur
+Henry M,116,241,Henry
+Descartes R,64,77,Henry
+Courtine J,42,51,Henry
+Gadamer H,106,158,Gadamer
+Grondin J,31,46,Gadamer
+Rorty R,22,28,Gadamer
+Patocka J,67,141,Patocka
+Nietzsche F,85,118,Nietzsche
+Arendt H,51,89,Arendt
+Agamben G,35,43,Arendt
+Taminiaux J,23,29,Arendt
+Kierkegaard S,48,71,Kierkegaard

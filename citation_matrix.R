@@ -8,8 +8,8 @@ library('tidyverse')
 # Functions ----
 
 # Load the manual name change document, used by clean.name function
-modified.authors <- read_csv(file = "data/processed/name_changes.csv") %>% 
-  select(old.name = `OLD NAME`, new.name = `NEW NAME ("NA" to Delete)`)
+modified.authors <- read_csv(file = "data/processed/name_changes.csv", col_names = c("old.name", "new.name", "comment")) %>% 
+  select(old.name, new.name)
 
 # Function to clean up names, by shortening them and handling special cases in a manual
 # name change document (name_changes.csv). This ensures multiple instances of a name
@@ -34,17 +34,17 @@ clean.name <- function(x) {
   }
   if(x == "NA"){return(NA)}
   # Manual name changes.  
-  # if(x %in% modified.authors$old.name){
-  #   name.ind <- which(modified.authors$old.name == x)
-  #   # print(x)s
-  #   return(modified.authors$new.name[name.ind])
-  # }
-  # else{
+  if(x %in% modified.authors$old.name){
+    name.ind <- which(modified.authors$old.name == x)
+    # print(x)
+    return(modified.authors$new.name[name.ind])
+  }
+  else{
     # The main algorithm applied to all authors Special cases are above.
     # Extracts the longest string followed by a space and then the
     # first letter of the next string
     return(str_extract(x, "^[A-Z]+[[:space:]]*[[A-Z]]{1}"))
-  # }
+  }
 }
 
 # Load and parse articles ------
@@ -223,4 +223,3 @@ co.citation.edge.list <- co.citation.matrix %>%
   gather("Target", "Weight", -Source) %>% 
   filter(Weight > 0)
 write_csv(co.citation.edge.list, "data/processed/cocitation_edge_list.csv")
-
