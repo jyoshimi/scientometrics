@@ -7,4 +7,5 @@
 .Rproj.user
 *.Rproj
 *.Rhistory
+*.rds
 ~$temp_names.xlsx
