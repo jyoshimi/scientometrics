@@ -51,7 +51,7 @@ clean.name <- function(x) {
 # Load raw.articles. View it to see main data. 
 # AU is citing author
 # CR is citations in the article
-# CR_AU is first author listed in each citation.  I..e cited author
+# CR_AU is first author listed in each citation.  I.e cited author
 citations_file = "data/processed/raw_articles.rds"
 if (file.exists(citations_file)) {
   raw.articles <- read_rds(citations_file)
@@ -153,6 +153,9 @@ citing.matrix.clean <- citing.matrix.clean[row.names(citing.matrix.clean) != "NA
 # Sort cited authors
 citing.matrix.clean <- citing.matrix.clean[,sort(colnames(citing.matrix.clean))]
 
+# For use in snippets.R
+# write_rds(citing.matrix.clean, "citing_matrix.rds")
+
 # Save for co-citation before consolidating citing authors
 co.citation.matrix <- citing.matrix.clean
 # Remove raw citing for memory
@@ -179,7 +182,8 @@ complete.edge.list <- gather(citing.matrix.clean, "Target", "Weight", -first.aut
   rename(Source = first.author) %>% 
   filter(Weight > 0)
 
-# These are the things we will use in the network analysis
+# Write the data ----
+
 write_csv(complete.edge.list, "data/processed/complete_edge_list.csv")
 
 # Make co-citation matrix -----
@@ -214,68 +218,8 @@ non.zero <- apply(co.citation.matrix, 1, function(row){
 co.citation.matrix <- co.citation.matrix[non.zero, non.zero]
 
 # Make and save edge list
-
 co.citation.edge.list <- co.citation.matrix %>% 
   as_tibble(rownames = "Source") %>% 
   gather("Target", "Weight", -Source) %>% 
   filter(Weight > 0)
 write_csv(co.citation.edge.list, "data/processed/cocitation_edge_list.csv")
-
-
-# Useful code snippets ------
-
-# Create a list of every cited author
-# write(sort(unique(colnames(citing.matrix.raw))), file = "~/Desktop/citedAuthors.txt")
-
-# See number of articles grabbed from each journal
-# raw.articles %>%  group_by(SO) %>% tally() %>% View()
-
-# Make sure we aren't getting Zahavi because of JCS. Can plug in gallagher too.
-# parsed.articles %>%
-#   filter(SO == "PHENOMENOLOGY AND THE COGNITIVE SCIENCES" & str_detect(CR_AU, "ZAHAVI")) %>%
-#   nrow()
-
-# See how often "phenomenology of spirit" is what was found
-# Results: Total: 189, Abstracts (AB): 113, Title (TI): 97,  Keywords (DE): 21
-# Note that there are 297 citing authors in the "Hegel cluster"
-# PS = "PHENOMENOLOGY OF SPIRIT|PHENOMENOLOGY OF MIND|DES GEISTES"
-# hegel.folks <- parsed.articles %>%
-#   filter(str_detect(AB, PS) | str_detect(TI, PS) | str_detect(DE, PS))
-#   # .$AU %>%  unique()
-# nrow(hegel.folks)
-# View(hegel.folks) # Peruse titles and references. Suggests this really is a mainly Hegel discussion
-
-
-
-# TEMPORARY ----
-
-# THIS IS THE CODE I USED TO GET THE NEW NAME CHANGE SPREADSHEET IN GOOGLE
-
-cited.names <- as.data.frame(colnames(citing.matrix)[-1], stringsAsFactors = FALSE)
-cited.names$short.name <- cited.names$`colnames(citing.matrix)[-1]` %>%
-  map_chr(clean.name)
-colnames(cited.names) <- c("name", "short.name")
-number.appearances.cited <- colSums(citing.matrix[,-1])
-cited.names <- add_column(cited.names, appearances = number.appearances.cited)
-
-citing.names <- as.data.frame(old.citing, stringsAsFactors = FALSE)
-citing.names$short.name <- old.citing %>%
-  map_chr(clean.name)
-colnames(citing.names) <- c("name", "short.name")
-number.appearances.citing <- rowSums(citing.matrix[,-1])
-citing.names <- add_column(citing.names, appearances = number.appearances.citing)
-
-all.names <- bind_rows(cited.names, citing.names) %>%
-  arrange(name) %>% 
-  group_by(name, short.name) %>% 
-  summarize(appearances = sum(appearances)) %>%
-  filter(!is.na(name))
-current_name <- read_csv("current_names - current_names.csv", col_names = c("name", "short.name", "comment"), col_types = c("ccc"), skip = 1) %>% 
-  select(-short.name)
-
-left_join(all.names, current_name) %>% 
-  arrange(name) %>% 
-  mutate(changed.in.old = ifelse(name %in% modified.authors$old.name, TRUE, FALSE),
-         present.in.old = ifelse(name %in% current_name$name, TRUE, FALSE)) %>%
-  arrange(name) %>%
-  write_csv("new_name_changes.csv" )

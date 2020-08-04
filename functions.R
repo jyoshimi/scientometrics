@@ -194,16 +194,31 @@ write.stats <- function(network, network.name){
   write_csv(x = network$stats, path = paste0("results/", network.name, "_stats", ".csv"))
 }
 
-write.tops <- function(network, network.name, n.top=10){
+# Writes the top n members of each community, after filtering for authors
+# cited more than n.filter  times.  Ordered by strength.
+write.tops <- function(network, network.name, n.top=10, n.filter = 20){
+  
+  # Show communities and for each how many members it
+  comm_list <- network$df %>%
+    group_by(community) %>% 
+    unique() %>% 
+    count() %>% 
+    arrange(desc(n)) 
+    
+  print(comm_list)
   
   # Get the top members of the community
+  # Method of ordering communities using "mx" is from here
+  # https://stackoverflow.com/questions/45359943/sort-by-group-using-max-value-of-each-group/45360190
   tops <- network$df %>%
+    filter(degree > n.filter) %>% 
     select(name,degree,strength,community) %>% 
     group_by(community) %>%
-    top_n(n.top, degree) %>%
-    arrange(community, desc(degree)) 
+    mutate(mx = max(strength)) %>% 
+    arrange(desc(mx), desc(strength)) %>% 
+    top_n(n.top, strength)
   
-  # write top members
+  # Write top members
   write_csv(x = tops, path = paste0("results/", network.name, "_tops", ".csv"))
   
 }

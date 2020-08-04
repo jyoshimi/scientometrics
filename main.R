@@ -17,13 +17,14 @@ citation.edges <- read_csv('data/processed/complete_edge_list.csv') %>%
 cit.net <- build.network(object = citation.edges, directed = TRUE)
 
 write.gephi(network = cit.net, network.name = "citation_complete")
-write.tops(network = cit.net, network.name = "citation_complete")
+write.tops(network = cit.net, network.name = "citation_complete", n.top = 10,
+           n.filter = 20)
 write.stats(network = cit.net, network.name = "citation_complete")
 
 # Get top-10 authors and sort by degree
 cit.net$df %>% top_n(10,degree) %>% arrange(desc(degree))
 
-# Sub-networks -----
+# Sub-networks (assume cit.net exists) -----
 
 # Husserl
 husserl.net <- build.network(object = cit.net$network.object, 
