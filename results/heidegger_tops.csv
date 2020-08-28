@@ -1,40 +1,45 @@
-name,degree,strength,community
-Heidegger M,473,962,Heidegger
-Aristotle,70,91,Heidegger
-Kisiel T,47,68,Heidegger
-Vonherrmann F,31,45,Heidegger
-Poggeler O,30,39,Heidegger
-Dastur F,34,38,Heidegger
-Sheehan T,27,30,Heidegger
-Figal G,23,27,Heidegger
-Vanburen J,21,27,Heidegger
-Dahlstrom D,21,26,Heidegger
-Levinas E,194,352,Levinas
-Plato,51,57,Levinas
-Franck D,25,32,Levinas
-Marion J,155,345,Marion
-Janicaud D,76,99,Marion
-Caputo J,55,79,Marion
-Chretien J,35,50,Marion
-Augustine,33,40,Marion
-Romano C,26,39,Marion
-Kearney R,23,31,Marion
-Derrida J,192,322,Derrida
-Nancy J,27,53,Derrida
-Blanchot M,26,29,Derrida
-Lawlor L,21,25,Derrida
-Critchley S,23,24,Derrida
-Ricoeur P,168,294,Ricoeur
-Greisch J,33,45,Ricoeur
-Henry M,116,241,Henry
-Descartes R,64,77,Henry
-Courtine J,42,51,Henry
-Gadamer H,106,158,Gadamer
-Grondin J,31,46,Gadamer
-Rorty R,22,28,Gadamer
-Patocka J,67,141,Patocka
-Nietzsche F,85,118,Nietzsche
-Arendt H,51,89,Arendt
-Agamben G,35,43,Arendt
-Taminiaux J,23,29,Arendt
-Kierkegaard S,48,71,Kierkegaard
+name,strength,community
+Heidegger M,969,Heidegger
+Aristotle,93,Heidegger
+Kisiel T,68,Heidegger
+Vonherrmann F,45,Heidegger
+Poggeler O,39,Heidegger
+Dastur F,38,Heidegger
+Sheehan T,30,Heidegger
+Figal G,28,Heidegger
+Vanburen J,27,Heidegger
+Dahlstrom D,26,Heidegger
+Levinas E,359,Levinas
+Plato,56,Levinas
+Franck D,32,Levinas
+Marion J,350,Marion
+Janicaud D,100,Marion
+Caputo J,79,Marion
+Chretien J,50,Marion
+Augustine,41,Marion
+Romano C,39,Marion
+Lacoste J,35,Marion
+Gschwandtner C,33,Marion
+Kearney R,32,Marion
+Westphal M,30,Marion
+Blanchot M,30,Marion
+Derrida J,324,Derrida
+Nancy J,53,Derrida
+Lawlor L,25,Derrida
+Critchley S,25,Derrida
+Bernasconi R,24,Derrida
+Ricoeur P,301,Ricoeur
+Greisch J,45,Ricoeur
+Henry M,243,Henry
+Descartes R,77,Henry
+Courtine J,52,Henry
+Gadamer H,162,Gadamer
+Grondin J,46,Gadamer
+Patocka J,141,Patocka
+Nietzsche F,120,Nietzsche
+Arendt H,90,Arendt
+Agamben G,47,Arendt
+Taminiaux J,29,Arendt
+Kierkegaard S,71,Kierkegaard
+Rorty R,28,Rorty
+Buber M,22,Buber

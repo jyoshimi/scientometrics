@@ -11,7 +11,7 @@ library(pals)
 build.network <- function(object, target.author = NULL, directed = FALSE, 
                           community.algorithm = igraph::cluster_louvain,
                           threshold = 0.01,
-                          num.to.display = 5){
+                          num.to.display = 1){
     
     # Main function to buld network objects
     #
@@ -211,8 +211,8 @@ write.tops <- function(network, network.name, n.top=10, n.filter = 20){
   # Method of ordering communities using "mx" is from here
   # https://stackoverflow.com/questions/45359943/sort-by-group-using-max-value-of-each-group/45360190
   tops <- network$df %>%
-    filter(degree > n.filter) %>% 
-    select(name,degree,strength,community) %>% 
+    filter(strength > n.filter) %>% 
+    select(name,strength,community) %>% 
     group_by(community) %>%
     mutate(mx = max(strength)) %>% 
     arrange(desc(mx), desc(strength)) %>% 

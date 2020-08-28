@@ -28,10 +28,7 @@ MAIN GRAPH
 		
 	- Layout  
 		Choice 1: Layout > Force Atlas 2
-		Choice 2: Layout > OpenOrd (suggest setting a random seed. Current graph uses seed of 3)
-			Custom settings for open-ord to try
-				a. In Stages": 25, 25, 25, 5, 20.
-				b. In "OpenOrd": unchanged, unchanged, 1000, 0.2, 3.
+		Choice 2: Layout > OpenOrd. Current graph uses seed of 4.
 
 	- Label display
 		- Click Show Node Labels button at bottom
@@ -43,13 +40,10 @@ MAIN GRAPH
 		- Layout > Label Adjust to get the labels not to overlap
 
 - Preview tab
-	- (For labels to show up here, "Edit labels" step above required. An alternative to export with no labels and then to edit png directly. Svg too large to deal with.)
+	- (For labels to show up here, "Edit labels" step above required. A useful alternative to export with no labels and then to edit the png directly. Svg too large to deal with.)
 	- Nodes: can set border width to 0 and opacity > 70
-	- Node labels > show labels: checked 
-	- Node labels > proportional size: checked
-	- Node labels > color: custom > black
-	- Node labels > outline opacity > 0
-	- Node labels > box > unchecked
+	- Nodes > border width: 0
+	- Nodes > opacity: 70
 	- Edges > thickness: 0.1.
 	- Edges > color: source
 	- Edges > opacity: 10
@@ -81,7 +75,7 @@ GROUP-BASED NETWORK
 - Overview Tab
 	- Appearance > Nodes > Size > Ranking > Size. Min 50 / Max 100
 	- Appearance > Nodes > Text > Size > Unique > .5
-	- Appearance > Edges > Text > 	Sizes > Min 5 / Max 10
+	- Appearance > Edges > Text > Ranking > Weight. Min 5 / Max 10
 	- Layout > circular layout
 		- Fixed diameter: checked
 		- Diamter: 1000

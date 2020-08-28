@@ -21,8 +21,20 @@ write.tops(network = cit.net, network.name = "citation_complete", n.top = 10,
            n.filter = 20)
 write.stats(network = cit.net, network.name = "citation_complete")
 
+write.tops(network = cit.net, network.name = "everyone", n.top = 100,
+           n.filter = 5)
+
+# Snippets -----
+
 # Get top-10 authors and sort by degree
-cit.net$df %>% top_n(10,degree) %>% arrange(desc(degree))
+topAuthors <- cit.net$df %>% top_n(1000,strength) %>% arrange(desc(strength))  
+topAuthors
+write_csv(x = topAuthors, path = paste0("results/","topAuthors", ".csv"))
+
+# Look at distributios of authors
+cit.net$df %>% 
+  filter(community %in% c("Husserl", "James")) %>%  
+  ggplot(aes(x = strength, y = ..density.., fill = community)) + geom_density(alpha = 0.6) + facet_grid(vars(community))
 
 # Sub-networks (assume cit.net exists) -----
 
@@ -33,6 +45,9 @@ husserl.net <- build.network(object = cit.net$network.object,
 write.gephi(network = husserl.net, network.name = "husserl")
 write.tops(network = husserl.net, network.name = "husserl")
 write.stats(network = husserl.net, network.name = "husserl")
+write.tops(network = husserl.net, network.name = "husserl_all", n.top = 100,
+           n.filter = 5)
+
 
 # Heidegger
 heidegger.net <- build.network(object = cit.net$network.object, 
@@ -41,6 +56,8 @@ heidegger.net <- build.network(object = cit.net$network.object,
 write.gephi(network = heidegger.net, network.name = "heidegger")
 write.tops(network = heidegger.net, network.name = "heidegger")
 write.stats(network = heidegger.net, network.name = "heidegger")
+write.tops(network = heidegger.net, network.name = "heidegger_all", n.top = 100,
+           n.filter = 5)
 
 # Merleau-Ponty
 merleauponty.net <- build.network(object = cit.net$network.object, 
@@ -49,7 +66,8 @@ merleauponty.net <- build.network(object = cit.net$network.object,
 write.gephi(network = merleauponty.net, network.name = "merleauponty")
 write.tops(network = merleauponty.net, network.name = "merleauponty")
 write.stats(network = merleauponty.net, network.name = "merleauponty")
-
+write.tops(network = merleauponty.net, network.name = "mp_all", n.top = 100,
+           n.filter = 5)
 
 # Cocitation networks ---------
 
