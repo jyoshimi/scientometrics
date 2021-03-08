@@ -10,7 +10,7 @@ library(pals)
 
 build.network <- function(object, target.author = NULL, directed = FALSE, 
                           community.algorithm = igraph::cluster_louvain,
-                          threshold = 0.01,
+                          cluster.threshold = 0.01,
                           num.to.display = 1){
     
     # Main function to buld network objects
@@ -32,7 +32,7 @@ build.network <- function(object, target.author = NULL, directed = FALSE,
     #           directed or not. Community detection is always carried out in an
     #           undirected version of the network.
     #
-    #           `threshold`: Communities with fewer than `threshold` (as a proportion)
+    #           `cluster.threshold`: Communities with fewer than `threshold` (as a proportion)
     #           of the number of nodes in the total network will be deleted along 
     #            with their  members.
     #
@@ -73,7 +73,7 @@ build.network <- function(object, target.author = NULL, directed = FALSE,
       
     }
     
-    # If it's not, a network, the function induces a sub-community. Thus, first
+    # If it's not a network, the function induces a sub-community. Thus, first
     # check is whether the provided object is an igraph network AND if a target
     # author was provided. Set function mode as target author
   } else if(is.igraph(object) & is.character(target.author)){ 
@@ -154,9 +154,9 @@ build.network <- function(object, target.author = NULL, directed = FALSE,
               total.strength = sum(strength)) %>% 
     mutate(relative.size = size / sum(size)) # Proportion of total nodes in this community
     
-  # Filter communities with less than `threshold`` of the members of the network
-  community.stats <- community.stats %>% 
-    filter(relative.size > threshold) %>% 
+  # Filter communities with less than `cluster.threshold`` of the members of the network
+  community.stats <- community.stats %>%
+    filter(relative.size > cluster.threshold) %>%
     arrange(desc(total.degree))
   
   # Filter the nodes and edges of those communities from the network and df too

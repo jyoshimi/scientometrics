@@ -49,7 +49,7 @@ edges %>% filter(Target == "YOSHIMI J") %>% select(Weight) %>% count()
 sort(unique(colnames(citation_matrix)))
 
 # Get top-10 authors and sort by degree
-citation_matrix %>% top_n(1000,strength)
+citation_matrix %>% top_n(1000,degree)
 
 
 # Number of articles grabbed from each journal

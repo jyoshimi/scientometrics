@@ -11,10 +11,14 @@ citation.edges <- read_csv('data/processed/complete_edge_list.csv') %>%
   rename(weight = Weight) %>% 
   filter(Source != Target) # To remove self-citations
 
+# Remove some edges
+# citation.edges <- citation.edges[-c(sample.int(50,length(citation.edges), replace=TRUE)),]
+
 # Directed citation network ------
 
 # Main citation network -----
-cit.net <- build.network(object = citation.edges, directed = TRUE)
+cit.net <- build.network(object = citation.edges, directed = TRUE, 
+                         cluster.threshold = 0)
 
 write.gephi(network = cit.net, network.name = "citation_complete")
 write.tops(network = cit.net, network.name = "citation_complete", n.top = 10,
@@ -26,17 +30,23 @@ write.tops(network = cit.net, network.name = "everyone", n.top = 100,
 
 # Snippets -----
 
-# Get top-10 authors and sort by degree
-topAuthors <- cit.net$df %>% top_n(1000,strength) %>% arrange(desc(strength))  
+# Get top authors and sort by degree
+topAuthors <- cit.net$df %>% top_n(1000,degree) %>% arrange(desc(strength))  
 topAuthors
 write_csv(x = topAuthors, path = paste0("results/","topAuthors", ".csv"))
 
-# Look at distributios of authors
+# Look at distributions of authors
 cit.net$df %>% 
   filter(community %in% c("Husserl", "James")) %>%  
+  group_by(community) %>% 
+  top_n(strength > 20) %>% 
   ggplot(aes(x = strength, y = ..density.., fill = community)) + geom_density(alpha = 0.6) + facet_grid(vars(community))
 
 # Sub-networks (assume cit.net exists) -----
+# Gets the community found using the name of any author in that community.
+# Example: below "Yoshimi J" would work just as well as "Husserl E"
+# Uses induced.subgraph. Looks for the community the author is in then builds a subgraph
+# using only the nodes from that community and the links in it
 
 # Husserl
 husserl.net <- build.network(object = cit.net$network.object, 

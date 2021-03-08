@@ -69,6 +69,14 @@ if (file.exists(citations_file)) {
 # Pulls the cited authors from CR and adds that CR_AU to a new table
 parsed.articles <- metaTagExtraction(M = raw.articles, Field = "CR_AU")
 
+# Hegel Check
+PS = "PHENOMENOLOGY OF SPIRIT|PHENOMENOLOGY OF MIND|DES GEISTES"
+hegel <- articles %>%
+  filter(str_detect(AB, PS) | str_detect(TI, PS) | str_detect(DE, PS)) %>%
+  select(AU, TI)
+parsed.articles <- filter(parsed.articles, !(TI %in% hegel$TI))
+
+
 # Create and consolidate citation matrix ------
 
 # An article-by-cited-author matrix.

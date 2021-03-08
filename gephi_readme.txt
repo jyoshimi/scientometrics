@@ -1,4 +1,4 @@
-MAIN GRAPH 
+ MAIN GRAPH 
 
 - File > Open...
 	- Open the .graphml file produced by the R analysis file. 
@@ -28,7 +28,7 @@ MAIN GRAPH
 		
 	- Layout  
 		Choice 1: Layout > Force Atlas 2
-		Choice 2: Layout > OpenOrd. Current graph uses seed of 4.
+		Choice 2: Layout > OpenOrd. Use defaults. Current graph uses seed of 4.
 
 	- Label display
 		- Click Show Node Labels button at bottom
