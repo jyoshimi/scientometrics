@@ -66,7 +66,11 @@ articles %>%  group_by(SO) %>% tally() %>%
 
 # Histogram of number of articles per year
 ggplot(data = articles, aes(x = PY)) + 
-  geom_histogram(bins = 20, color = "white") + labs(x="Year", y = "Count")
+  geom_histogram(bins = 20, color = "white", fill = "black") +
+  theme_bw() +
+  scale_y_continuous("Count", seq(250, 1500, 250)) +
+  scale_x_continuous("Year", seq(1950, 2020, 10))
+ggsave("figures/histogram_count.png", dpi = 300, width = 6.5, height = 4.5)
 mean(articles$PY, na.rm = TRUE)
 sd(articles$PY, na.rm = TRUE)
 
